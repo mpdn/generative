@@ -36,7 +36,7 @@ namespace coherent
 			sum += (*i)(position * lac) * per;
 		
 		//Apply scaling factor (preliminary, might not be correct)
-		return sum * (persistence - 1) / (per - 1);
+		return sum; // * (persistence - 1) / (per - 1); TODO: fix scaling
 	}
 }
 #endif
