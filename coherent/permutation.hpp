@@ -14,7 +14,7 @@ namespace coherent
 		private:
 		const static unsigned int size = 256;
 		unsigned char perm[size * 2];
-	
+		
 		public:
 		
 		/// Creates a permutation using a random number generator.
@@ -22,9 +22,9 @@ namespace coherent
 		explicit Permutation(RNG& prng)
 		{
 			for (unsigned int i = 0; i < size; i++)
-    			perm[i] = i;
-    			
-    		std::shuffle(perm, perm + size, prng);
+				perm[i] = i;
+				
+			std::shuffle(perm, perm + size, prng);
 			std::copy(perm, perm + size, perm + size);
 		}
 		
