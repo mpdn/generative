@@ -19,7 +19,7 @@ namespace coherent
 	///
 	/// 'persistence' is the the proportional change in amplitude (a value of
 	/// 0.5 will give each octave half the amplitude of the one before it).
-	/// This value must not be equal to 1.
+	/// The function will return NaN if this value is exactly 1.0.
 	///
 	/// 'position' is the position of the noise value to return.
 	template <typename Iterator, typename Derived>
@@ -30,9 +30,6 @@ namespace coherent
 	                                 const Eigen::MatrixBase<Derived>& position)
 	{
 		EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
-		
-		//A persistence of 1 is not supported. Instead, use a value close to 1.
-		assert(persistence != 1.0);
 		
 		typename Derived::Scalar sum = 0, per = 1, lac = 1;
 		for (Iterator i = begin; i != end; i++, per *= persistence, lac *= lacunarity)
