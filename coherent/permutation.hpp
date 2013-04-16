@@ -5,6 +5,7 @@
 #define COHERENT_PERMUTATION_HPP
 
 #include <algorithm>
+#include <cassert>
 
 namespace coherent
 {
