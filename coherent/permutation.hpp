@@ -16,7 +16,7 @@ namespace coherent
 		unsigned char perm[size * 2];
 		
 		public:
-		
+		//
 		/// Creates a permutation using a random number generator.
 		template<class RNG>
 		explicit Permutation(RNG& prng)
@@ -27,6 +27,23 @@ namespace coherent
 			std::shuffle(perm, perm + size, prng);
 			std::copy(perm, perm + size, perm + size);
 		}
+		
+		//
+		//
+		template<typename Iterator>
+		explicit Permutation(Iterator begin, Iterator end)
+		{
+#ifdef NDEBUG
+			assert(std::distance(begin, end) == size);
+#endif
+			std::copy(begin, end, perm);
+#ifdef NDEBUG
+			std::sort(perm, perm + size);
+			assert(std::distance(perm, std::unique(perm, perm + size)) == size);
+			std::copy(begin, end, perm);
+#endif
+		}
+		
 		
 		/// Returns the value at position 'i'. Allowed range is 0 <= i < 512.
 		/// The last 256 values are the a repetition of the first 256.
