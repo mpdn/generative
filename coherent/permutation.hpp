@@ -34,11 +34,11 @@ namespace coherent
 		template<typename Iterator>
 		explicit Permutation(Iterator begin, Iterator end)
 		{
-#ifdef NDEBUG
+#ifndef NDEBUG
 			assert(std::distance(begin, end) == size);
 #endif
 			std::copy(begin, end, perm);
-#ifdef NDEBUG
+#ifndef NDEBUG
 			std::sort(perm, perm + size);
 			assert(std::distance(perm, std::unique(perm, perm + size)) == size);
 			std::copy(begin, end, perm);
