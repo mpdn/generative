@@ -9,6 +9,13 @@
 #include <iterator>
 #include <random>
 #include <Eigen/Core>
+#include <boost/iterator/transform_iterator.hpp>
+
+#ifndef COHERENT_IGNORE_BOOST_RESULT_OF
+#ifndef BOOST_RESULT_OF_USE_DECLTYPE
+#error libcoherent requires BOOST_RESULT_OF_USE_DECLTYPE to be defined in order to compile (this check can be ignored by defining COHERENT_IGNORE_BOOST_RESULT_OF)
+#endif
+#endif
 
 namespace coherent
 {
@@ -17,14 +24,14 @@ namespace coherent
 		/// Provides a function object which applies an offset to a function
 		/// before calling it.
 		template <typename Function, typename Scalar, int dimensions>
-		class OffsetFunctor
+		class OffsetPositionFunctor
 		{
 			typedef typename Eigen::Matrix<Scalar, dimensions, 1> Offset;
 			Function function;
 			Offset offset;
 		
 			public:
-			OffsetFunctor(Function _function, Offset _offset)
+			OffsetPositionFunctor(Function _function, Offset _offset)
 				: function(_function), offset(_offset)
 			{ }
 		
@@ -35,14 +42,23 @@ namespace coherent
 				return function(offset + position);
 			}
 		};
-	
-		///
-		/// Creates an OffsetFunctor (makes it possible to use type inference).
-		template <typename Function, typename Scalar, int dimensions>
-		OffsetFunctor<Function, Scalar, dimensions> make_OffsetFunctor(Function function, Eigen::Matrix<Scalar, dimensions, 1> offset)
+		
+		template <typename Function>
+		class OffsetFunctor
 		{
-			return OffsetFunctor<Function, Scalar, dimensions>(function, offset);
-		}
+			Function function;
+			
+			public:			
+			OffsetFunctor(Function _function)
+				: function(_function)
+			{ }
+			
+			template <typename Derived>
+			OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime> operator()(const Eigen::MatrixBase<Derived>& offset) const
+			{
+				return OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime>(function, offset);
+			}
+		};
 	}
 	
 	///
@@ -54,7 +70,7 @@ namespace coherent
 		for (int i = 0; i < Derived::RowsAtCompileTime; i++)
 			output[i] = gen();
 	}
-
+	
 	///
 	/// Fills a sequence of vectors with random values in the range [-magnitude, magnitude].
 	template <typename Iterator, class PRNG>
@@ -64,65 +80,13 @@ namespace coherent
 			offset(*i, prng, magnitude);
 	}
 	
-	/// Uses an offset from a iterator along with a noise function to create
-	/// offset noise. Useful for generating several similar noise function from
-	/// a single noise function.
-	template <typename Function, typename Iterator>
-	class OffsetIterator
-		: std::iterator<std::input_iterator_tag,
-		                OffsetFunctor<Function,
-		                              typename std::iterator_traits<Iterator>::value_type::Scalar,
-		                              std::iterator_traits<Iterator>::value_type::RowsAtCompileTime>>
-	                                      
-	{
-		using typename std::iterator<std::input_iterator_tag,
-		                             OffsetFunctor<Function,
-		                                           typename std::iterator_traits<Iterator>::value_type::Scalar,
-		                                           std::iterator_traits<Iterator>::value_type::RowsAtCompileTime>>::value_type;
-		
-		Function function;
-		Iterator iterator;
-	
-		public:
-		OffsetIterator(Function _function, Iterator _iterator)
-			: function(_function), iterator(_iterator)
-		{ }
-		
-		bool operator== (const OffsetIterator<Function, Iterator>& other) const
-		{
-			return iterator == other.iterator;
-		}
-		
-		bool operator!= (const OffsetIterator<Function, Iterator>& other) const
-		{
-			return iterator != other.iterator;
-		}
-		
-		OffsetIterator<Function, Iterator>& operator++()
-		{
-			++iterator;
-			return *this;
-		}
-		
-		OffsetIterator<Function, Iterator> operator++(int)
-		{
-			OffsetIterator<Function, Iterator> tmp(*this);
-			operator++();
-			return tmp;
-		}
-		
-		value_type operator* () const
-		{
-			return value_type(function, *iterator);
-		}
-	};
-	
 	///
 	/// Creates an OffsetIterator (lets us use type inference)
-	template <typename Function, typename Iterator>
-	OffsetIterator<Function, Iterator> make_OffsetIterator(Function function, Iterator iterator)
+	template <typename Iterator, typename Function>
+	auto make_offset_iterator(Iterator iterator, Function function)
+		-> decltype(boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function)))
 	{
-		return OffsetIterator<Function, Iterator>(function, iterator);
+		return boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function));
 	}
 }
 

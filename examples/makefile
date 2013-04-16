@@ -1,4 +1,4 @@
-CXXFLAGS=-I.. -I/usr/include/eigen3 -std=c++11 -Wall -O3
+CXXFLAGS=-I.. -I/usr/include/eigen3 -std=c++11 -Wall -O3 -Wfatal-errors
 
 all: images
 examples: SimplexFractal.out Fractal.out
