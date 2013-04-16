@@ -30,7 +30,7 @@ namespace coherent
 				auto simplex = std::bind(coherent::Simplex(), std::cref(perm), _1);
 	
 				auto begin = coherent::make_offset_iterator(offsets.begin(), simplex),
-					 end   = coherent::make_offset_iterator(offsets.end(), simplex);
+				     end   = coherent::make_offset_iterator(offsets.end(), simplex);
 		
 				int height = image.get_height();
 				int width = image.get_width();
