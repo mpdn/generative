@@ -60,7 +60,9 @@ namespace coherent
 		// The maximum value of this noise is 8*(3/4)^4 = 2.53125
 		// A factor of 0.395 would scale to fit exactly within [-1,1], but
 		// The algorithm isn't perfect, as it is assymetric. The correction will normalize the result to the interval [-1,1], but the average will be off by 3%.
-		return (n0 + n1 + 0.076368899f) / 2.45488110001f;
+		
+		//Note: Changed interval to [0,1]
+		return (n0 + n1 + 0.076368899f) / 4.90976220002f + 0.5;
 	}
 	
 	template <typename Scalar>
@@ -134,9 +136,9 @@ namespace coherent
 		}
 
 		// Add contributions from each corner to get the final noise value.
-		// The result is scaled to return values in the interval [-1,1].
+		// The result is scaled to return values in the interval [0,1].
 		
-		return (n0 + n1 + n2) / 0.022108854818853867f;
+		return (n0 + n1 + n2) / 0.044217709637707734f + 0.5f ;
 	}
 	
 	template <typename Derived>

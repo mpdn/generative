@@ -38,7 +38,7 @@ namespace coherent
 					for (int x = 0; x < width; x++)
 					{
 						float rx = (float)x / width, ry = (float)y / height;
-						float value = (coherent::fractal(begin, end, lacunarity, persistence, Eigen::Vector2f(rx,ry) * frequency) * 0.5 + 0.5) * 0xFF;
+						float value = coherent::fractal(begin, end, lacunarity, persistence, Eigen::Vector2f(rx,ry) * frequency) * 0xFF;
 						image[y][x] = png::rgb_pixel(value, value, value);
 					}
 			}

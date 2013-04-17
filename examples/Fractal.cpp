@@ -43,9 +43,7 @@ namespace coherent
 								                        end,
 								                        lacunarity,
 								                        persistence * ry,
-								                        Eigen::Vector2f(1000, 1000) + Eigen::Vector2f(rx,ry) * frequency);
-				
-						value = (value * 0.5 + 0.5) * 0xFF;
+								                        Eigen::Vector2f(1000, 1000) + Eigen::Vector2f(rx,ry) * frequency) * 0xFF;
 				
 						image[y][x] = png::rgb_pixel(value, value, value);
 					}
