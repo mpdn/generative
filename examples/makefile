@@ -1,8 +1,8 @@
 CXXFLAGS=-I.. -I/usr/include/eigen3 -std=c++11 -Wall -O3 -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
 
 all: images
-examples: SimplexFractal.out Fractal.out
-images: SimplexFractal.png Fractal.png
+examples: SimplexFractal.out Fractal.out RidgedMultifractal.out
+images: SimplexFractal.png Fractal.png RidgedMultifractal.png
 
 %.out : %.cpp $(wildcard ../coherent/*)
 	$(CXX) $(CXXFLAGS) $< -o $@ -lpng
