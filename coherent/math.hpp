@@ -18,7 +18,7 @@ namespace coherent
 	}
 	
 	/// Given a value in the range [0,1], returns the value in the opposite side
-	/// of the range. Eg. 0 will becom 1 and vice versa.
+	/// of the range. Eg. 0 will become 1 and vice versa.
 	template <typename FloatType>
 	FloatType invert(FloatType value)
 	{
