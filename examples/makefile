@@ -4,7 +4,7 @@ all: images
 examples: SimplexFractal.out Fractal.out RidgedMultifractal.out
 images: SimplexFractal.png Fractal.png RidgedMultifractal.png
 
-%.out : %.cpp $(wildcard ../coherent/*)
+%.out : %.cpp example.hpp $(wildcard ../coherent/*)
 	$(CXX) $(CXXFLAGS) $< -o $@ -lpng
 
 %.png: %.out
