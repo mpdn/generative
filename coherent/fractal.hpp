@@ -45,7 +45,7 @@ namespace coherent
 	/// @param lacunarity the proportional change in frequency (a value of 2 will give each octave double the frequency of the one before it).
 	/// @param persistence is the the proportional change in amplitude (a value of 0.5 will give each octave half the amplitude of the one before it). The function will return NaN if persistence is exactly 1.0.
 	/// @param position the position of the noise value to return.
-	template <typename Iterator, typename Derived>s
+	template <typename Iterator, typename Derived>
 	typename Derived::Scalar fractal_feedback(Iterator begin,
 	                                          Iterator end,
 	                                          typename Derived::Scalar lacunarity,
