@@ -1,8 +1,11 @@
 //Copyright (c) 2013 Mike Pedersen
 //See the file license.txt for copying permission.
 
-// This file is based on simplexnoise1234.h and simplexnoise1234.cpp by
-// Stefan Gustavson, originally released into public domain.
+/// @file
+/// Simplex noise functions. An effecient gradient noise function.
+///
+/// These functions are heavily based on simplexnoise1234.h and simplexnoise1234.cpp
+/// by Stefan Gustavson: webstaff.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
 
 #ifndef COHERENT_SIMPLEX_HPP
 #define COHERENT_SIMPLEX_HPP
@@ -391,15 +394,15 @@ namespace coherent
 		Scalar t3 = 0.6f - x3*x3 - y3*y3 - z3*z3 - w3*w3;
 		if(t3 < 0.0f) n3 = 0.0f;
 		else {
-		t3 *= t3;
-		n3 = t3 * t3 * grad(perm[ii+i3+perm[jj+j3+perm[kk+k3+perm[ll+l3]]]], x3, y3, z3, w3);
+			t3 *= t3;
+			n3 = t3 * t3 * grad(perm[ii+i3+perm[jj+j3+perm[kk+k3+perm[ll+l3]]]], x3, y3, z3, w3);
 		}
 
 		Scalar t4 = 0.6f - x4*x4 - y4*y4 - z4*z4 - w4*w4;
 		if(t4 < 0.0f) n4 = 0.0f;
 		else {
-		t4 *= t4;
-		n4 = t4 * t4 * grad(perm[ii+1+perm[jj+1+perm[kk+1+perm[ll+1]]]], x4, y4, z4, w4);
+			t4 *= t4;
+			n4 = t4 * t4 * grad(perm[ii+1+perm[jj+1+perm[kk+1+perm[ll+1]]]], x4, y4, z4, w4);
 		}
 
 		// Sum up and scale the result to cover the range [-1,1]
@@ -408,39 +411,41 @@ namespace coherent
 	
 	template <typename Derived>
 	typename std::enable_if<Derived::RowsAtCompileTime == 1, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& pos)
+		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
 	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 1, 1>(pos));
+		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 1, 1>(position));
 	}
 	
 	template <typename Derived>
 	typename std::enable_if<Derived::RowsAtCompileTime == 2, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& pos)
+		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
 	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 2, 1>(pos));
+		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 2, 1>(position));
 	}
 	
 	template <typename Derived>
 	typename std::enable_if<Derived::RowsAtCompileTime == 3, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& pos)
+		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
 	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 3, 1>(pos));
+		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 3, 1>(position));
 	}
 	
 	template <typename Derived>
 	typename std::enable_if<Derived::RowsAtCompileTime == 4, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& pos)
+		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
 	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 4, 1>(pos));
+		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 4, 1>(position));
 	}
 	
+	/// A function object that can be called like the simplex function. Use this
+	/// as a function pointer to the simplex function.
 	struct Simplex
 	{
 		template <typename Derived>
-		auto operator() (const Permutation& perm, const Eigen::MatrixBase<Derived>& pos) const
-			-> decltype(simplex(perm, pos))
+		auto operator() (const Permutation& perm, const Eigen::MatrixBase<Derived>& position) const
+			-> decltype(simplex(perm, position))
 		{
-			return simplex(perm, pos);
+			return simplex(perm, position);
 		}
 	};
 }

@@ -9,6 +9,7 @@
 
 namespace coherent
 {
+	///
 	/// A permutation of the values under 256. Used in certain noise functions.
 	class Permutation
 	{
@@ -17,8 +18,8 @@ namespace coherent
 		unsigned char perm[size * 2];
 		
 		public:
-		//
-		/// Creates a permutation using a random number generator.
+		/// Creates a permutation using a random number generator
+		/// @param prng the random number generator to use
 		template<class RNG>
 		explicit Permutation(RNG& prng)
 		{
@@ -29,8 +30,9 @@ namespace coherent
 			std::copy(perm, perm + size, perm + size);
 		}
 		
-		//
-		//
+		/// Creates a permutation from another sequence
+		/// @param begin the beginning of the sequence
+		/// @param end the end of the sequence
 		template<typename Iterator>
 		explicit Permutation(Iterator begin, Iterator end)
 		{
@@ -46,11 +48,28 @@ namespace coherent
 		}
 		
 		
-		/// Returns the value at position 'i'. Allowed range is 0 <= i < 512.
-		/// The last 256 values are the a repetition of the first 256.
-		unsigned char operator[](unsigned int i) const
+		/// Returns the permutation value at a certain index
+		/// @param index the index of the value to return. Allowed range is
+		/// 0 <= i < 512. The last 256 values are the a repetition of the first
+		/// 256.
+		unsigned char operator[](unsigned int index) const
 		{
-			return perm[i];
+			return perm[index];
+		}
+		
+		/// The type iterator type used when iterator over the permutation
+		typedef const unsigned char* iterator;
+		
+		/// Returns an iterator to the beginning of the permutation
+		iterator begin() const
+		{
+			return perm;
+		}
+		
+		/// Returns an iterator just past the end of the permutation
+		iterator end() const
+		{
+			return perm + size;
 		}
 	};
 }

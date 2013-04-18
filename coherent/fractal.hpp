@@ -10,21 +10,17 @@
 namespace coherent
 {
 	/// Calculates the sum of several noise functions (called octaves) with
-	/// rising frequency and decreasing amplitude.
+	/// rising frequency and decreasing amplitude. The range of the return type
+	/// will be the same as the noise functions (usually [0,1]).
 	/// 
-	/// 'begin' and 'end' corresponds to a list of noise functions.
-	///
-	/// 'lacunarity' is the proportional change in frequency (a value of 2 will
+	/// @param begin the beginning of the list of noise functions
+	/// @param end the end of the list of noise functions
+	/// @param lacunarity the proportional change in frequency (a value of 2 will
 	/// give each octave double the frequency of the one before it).
-	///
-	/// 'persistence' is the the proportional change in amplitude (a value of
-	/// 0.5 will give each octave half the amplitude of the one before it).
-	/// The function will return NaN if this value is exactly 1.0.
-	///
-	/// 'position' is the position of the noise value to return.
-	///
-	/// The range of the return type will be the same as the noise functions
-	/// (usually [0,1]).
+	/// @param persistence is the the proportional change in amplitude (a value
+	/// of 0.5 will give each octave half the amplitude of the one before it).
+	/// The function will return NaN if persistence is exactly 1.0.
+	/// @param position the position of the noise value to return.
 	template <typename Iterator, typename Derived>
 	typename Derived::Scalar fractal(Iterator begin,
 	                                 Iterator end,
@@ -45,20 +41,15 @@ namespace coherent
 	/// Calculates the sum of several noise functions (called octaves) with
 	/// rising frequency and decreasing amplitude, multiplied by the previous
 	/// octave.
-	///
-	/// 'begin' and 'end' corresponds to a list of noise functions.
-	///
-	/// 'lacunarity' is the proportional change in frequency (a value of 2 will
+	/// 
+	/// @param begin the beginning of the list of noise functions
+	/// @param end the end of the list of noise functions
+	/// @param lacunarity the proportional change in frequency (a value of 2 will
 	/// give each octave double the frequency of the one before it).
-	///
-	/// 'persistence' is the the proportional change in amplitude (a value of
-	/// 0.5 will give each octave half the amplitude of the one before it).
-	/// The function will return NaN if this value is exactly 1.0.
-	///
-	/// 'position' is the position of the noise value to return.
-	///
-	/// The range of the return type will be the same as the noise functions
-	/// (usually [0,1]).
+	/// @param persistence is the the proportional change in amplitude (a value
+	/// of 0.5 will give each octave half the amplitude of the one before it).
+	/// The function will return NaN if persistence is exactly 1.0.
+	/// @param position the position of the noise value to return.
 	template <typename Iterator, typename Derived>
 	typename Derived::Scalar fractal_feedback(Iterator begin,
 	                                 Iterator end,

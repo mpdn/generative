@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <iterator>
 #include <random>
 #include <Eigen/Core>
 #include <boost/iterator/transform_iterator.hpp>
@@ -43,6 +42,9 @@ namespace coherent
 			}
 		};
 		
+		/// Function object that, given a function, binds a offset to it and 
+		/// returns a OffsetPositionFunctor that then applies the offset to a
+		/// position.
 		template <typename Function>
 		class OffsetFunctor
 		{
@@ -61,8 +63,13 @@ namespace coherent
 		};
 	}
 	
+	/// Fills a vector with random values
 	///
-	/// Fills a vector with random values in the range [-magnitude, magnitude]
+	/// @tparam Derived the derived type of the output matrix
+	/// @tparam PRNG the type of the random number generator
+	/// @param output the matrix to which the random values will be written to
+	/// @param prng the random number generator used to generate the random values
+	/// @param magnitude the maxmimum absolute value of each value
 	template <typename Derived, class PRNG>
 	void offset(Eigen::MatrixBase<Derived>& output, PRNG& prng, typename Derived::Scalar magnitude)
 	{
@@ -71,8 +78,14 @@ namespace coherent
 			output[i] = gen();
 	}
 	
+	/// Fills a sequence of vectors with random values
 	///
-	/// Fills a sequence of vectors with random values in the range [-magnitude, magnitude].
+	/// @tparam Iterator an iterator to vectors
+	/// @tparam PRNG the type of the random number generator
+	/// @param begin the iterator to the beginning of the sequence of vectors to fill with random values.
+	/// @param end the iterator to the end of the sequence of vectors to fill with random values.
+	/// @param prng the random number generator used to generate the random values
+	/// @param magnitude the maxmimum absolute value of each value
 	template <typename Iterator, class PRNG>
 	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::Scalar magnitude)
 	{
@@ -80,8 +93,17 @@ namespace coherent
 			offset(*i, prng, magnitude);
 	}
 	
+	/// Creates an iterator which, given an iterator of vectors and a
+	/// a function taking said vector, applies the vector as offset for the
+	/// function. This can be used to effeciently create multiple noise
+	/// functions from a single noise function.
 	///
-	/// Creates an OffsetIterator (lets us use type inference)
+	/// The object returned when dereferencing the iterator created by this
+	/// function is a function object which takes a vector as parameter, adds it
+	/// to the vector from the iterator, and calls the function with it.
+	///
+	/// @param iterator an iterator to vectors which will act as offsets
+	/// @param function an function that accepts a vector as pointed to by iterator
 	template <typename Iterator, typename Function>
 	auto make_offset_iterator(Iterator iterator, Function function)
 		-> decltype(boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function)))
