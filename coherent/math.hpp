@@ -1,3 +1,6 @@
+//Copyright (c) 2013 Mike Pedersen
+//See the file license.txt for copying permission.
+
 #ifndef COHERENT_MATH_HPP
 #define COHERENT_MATH_HPP
 
