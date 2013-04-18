@@ -49,15 +49,14 @@ namespace coherent
 		
 		
 		/// Returns the permutation value at a certain index
-		/// @param index the index of the value to return. Allowed range is
-		/// 0 <= i < 512. The last 256 values are the a repetition of the first
+		/// @param index the index of the value to return. Allowed range is 0 <= i < 512. The last 256 values are the a repetition of the first
 		/// 256.
 		unsigned char operator[](unsigned int index) const
 		{
 			return perm[index];
 		}
 		
-		/// The type iterator type used when iterator over the permutation
+		/// The iterator type used when iterator over the permutation
 		typedef const unsigned char* iterator;
 		
 		/// Returns an iterator to the beginning of the permutation
