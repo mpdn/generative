@@ -52,10 +52,10 @@ namespace coherent
 	/// @param position the position of the noise value to return.
 	template <typename Iterator, typename Derived>
 	typename Derived::Scalar fractal_feedback(Iterator begin,
-	                                 Iterator end,
-	                                 typename Derived::Scalar lacunarity,
-	                                 typename Derived::Scalar persistence,
-	                                 const Eigen::MatrixBase<Derived>& position)
+	                                          Iterator end,
+	                                          typename Derived::Scalar lacunarity,
+	                                          typename Derived::Scalar persistence,
+	                                          const Eigen::MatrixBase<Derived>& position)
 	{
 		EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
 		
