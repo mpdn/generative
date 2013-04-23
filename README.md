@@ -7,9 +7,7 @@ Dependencies
 * Eigen3
 * Boost (also needs BOOST_RESULT_OF_USE_DECLTYPE to be defined)
 
-In addition, the examples have the following dependencies:
-* libpng
-* PNG++
+In addition, the examples require Boost's program options library.
 
 License
 -------
