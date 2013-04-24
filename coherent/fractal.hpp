@@ -70,7 +70,7 @@ namespace coherent
 	
 	/// Calculates the amount of octaves needed to generate noise to within a 
 	/// certain margin of precision. Any octaves beyond this will not result
-	/// in a change in noose values beyond that margin.
+	/// in a change in noise values beyond that margin.
 	///
 	/// @param persistence the persistence value of the fractal noise. Must be between 0.0 and 1.0 (exclusive)
 	/// @param precision the precision needed. A lower value will result in more octaves
