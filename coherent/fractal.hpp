@@ -20,11 +20,12 @@ namespace coherent
 	/// @param persistence is the the proportional change in amplitude (a value of 0.5 will give each octave half the amplitude of the one before it). The function will return NaN if persistence is exactly 1.0.
 	/// @param position the position of the noise value to return.
 	template <typename Iterator, typename Derived>
-	typename Derived::Scalar fractal(Iterator begin,
-	                                 Iterator end,
-	                                 typename Derived::Scalar lacunarity,
-	                                 typename Derived::Scalar persistence,
-	                                 const Eigen::MatrixBase<Derived>& position)
+	typename Derived::Scalar
+	fractal(Iterator begin,
+	        Iterator end,
+	        typename Derived::Scalar lacunarity,
+	        typename Derived::Scalar persistence,
+	        const Eigen::MatrixBase<Derived>& position)
 	{
 		EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
 		
@@ -46,11 +47,12 @@ namespace coherent
 	/// @param persistence is the the proportional change in amplitude (a value of 0.5 will give each octave half the amplitude of the one before it). The function will return NaN if persistence is exactly 1.0.
 	/// @param position the position of the noise value to return.
 	template <typename Iterator, typename Derived>
-	typename Derived::Scalar fractal_feedback(Iterator begin,
-	                                          Iterator end,
-	                                          typename Derived::Scalar lacunarity,
-	                                          typename Derived::Scalar persistence,
-	                                          const Eigen::MatrixBase<Derived>& position)
+	typename Derived::Scalar
+	fractal_feedback(Iterator begin,
+	                 Iterator end,
+	                 typename Derived::Scalar lacunarity,
+	                 typename Derived::Scalar persistence,
+	                 const Eigen::MatrixBase<Derived>& position)
 	{
 		EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
 		
@@ -64,6 +66,18 @@ namespace coherent
 		
 		//Apply scaling factor
 		return sum * (persistence - 1) / (per - 1);
+	}
+	
+	/// Calculates the amount of octaves needed to generate noise to within a 
+	/// certain margin of precision. Any octaves beyond this will not result
+	/// in a change in nose values beyond that margin.
+	///
+	/// @param persistence the persistence value of the fractal noise. Must be between 0.0 and 1.0 (exclusive)
+	/// @param precision the precision needed. A lower value will result in more octaves
+	template <typename FloatType>
+	typename int fractal_octaves(FloatType persistence, FloatType precision)
+	{
+		return (int)std::ceil(std::log(precision) / std::log(persistence));
 	}
 }
 #endif
