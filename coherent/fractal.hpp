@@ -75,7 +75,7 @@ namespace coherent
 	/// @param persistence the persistence value of the fractal noise. Must be between 0.0 and 1.0 (exclusive)
 	/// @param precision the precision needed. A lower value will result in more octaves
 	template <typename FloatType>
-	typename int fractal_octaves(FloatType persistence, FloatType precision)
+	int fractal_octaves(FloatType persistence, FloatType precision)
 	{
 		return (int)std::ceil(std::log(precision) / std::log(persistence));
 	}
