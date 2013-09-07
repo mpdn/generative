@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <random>
-#include <Eigen/Core>
+#include <glm/glm.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 
 #ifndef COHERENT_IGNORE_BOOST_RESULT_OF
@@ -20,62 +20,37 @@ namespace coherent
 {
 	namespace
 	{
-		/// Provides a function object which applies an offset to a function
-		/// before calling it.
-		template <typename Function, typename Scalar, int dimensions>
-		class OffsetPositionFunctor
+		template <typename Iterator>
+		struct iterator_vector
 		{
-			typedef typename Eigen::Matrix<Scalar, dimensions, 1> Offset;
-			Function function;
-			Offset offset;
-		
-			public:
-			OffsetPositionFunctor(Function _function, Offset _offset)
-				: function(_function), offset(_offset)
-			{ }
-		
-			template <typename Derived>
-			auto operator()(const Eigen::MatrixBase<Derived>& position) const
-				-> decltype(function(offset + position))
-			{
-				return function(offset + position);
-			}
+			static_assert(detail::is_vector<Iterator>::value, "Must be an iterator of vectors");
+			typedef std::iterator_traits<Iterator>::value_type type;
 		};
 		
-		/// Function object that, given a function, binds a offset to it and 
-		/// returns a OffsetPositionFunctor that then applies the offset to a
-		/// position.
-		template <typename Function>
-		class OffsetFunctor
+		template <typename Function, typename Vector>
+		auto apply_offset(Function function, Vector offset, Vector position)
+		-> decltype(function(offset + position))
 		{
-			Function function;
-			
-			public:			
-			OffsetFunctor(Function _function)
-				: function(_function)
-			{ }
-			
-			template <typename Derived>
-			OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime> operator()(const Eigen::MatrixBase<Derived>& offset) const
-			{
-				return OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime>(function, offset);
-			}
-		};
+			return function(offset + position);
+		}
 	}
 	
 	/// Fills a vector with random values
 	///
-	/// @tparam Derived the derived type of the output matrix
+	/// @tparam Vector the Vector type of the output matrix
 	/// @tparam PRNG the type of the random number generator
 	/// @param output the matrix to which the random values will be written to
 	/// @param prng the random number generator used to generate the random values
 	/// @param magnitude the maxmimum absolute value of each value
-	template <typename Derived, class PRNG>
-	void offset(Eigen::MatrixBase<Derived>& output, PRNG& prng, typename Derived::Scalar magnitude)
+	template <typename Vector, class PRNG>
+	Vector offset(PRNG& prng, typename Vector::value_type magnitude)
 	{
-		auto gen = std::bind(std::uniform_real_distribution<typename Derived::Scalar>(-magnitude, magnitude), std::ref(prng));
-		for (int i = 0; i < Derived::RowsAtCompileTime; i++)
+		detail::assert_vector<Vector>();
+		Vector output;
+		auto gen = std::bind(std::uniform_real_distribution<typename Vector::value_type>(-magnitude, magnitude), std::ref(prng));
+		for (int i = 0; i < output.length(); i++)
 			output[i] = gen();
+		return output;
 	}
 	
 	/// Fills a sequence of vectors with random values
@@ -87,10 +62,9 @@ namespace coherent
 	/// @param prng the random number generator used to generate the random values
 	/// @param magnitude the maxmimum absolute value of each value
 	template <typename Iterator, class PRNG>
-	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::Scalar magnitude)
+	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::value_type magnitude)
 	{
-		for (Iterator i = begin; i != end; i++)
-			offset(*i, prng, magnitude);
+		std::generate(begin, end, std::bind(offset<PRNG, iterator_vector<Iterator>::type>, prng, magnitude));
 	}
 	
 	/// Creates an iterator which, given an iterator of vectors and a
@@ -106,9 +80,18 @@ namespace coherent
 	/// @param function an function that accepts a vector as pointed to by iterator
 	template <typename Iterator, typename Function>
 	auto make_offset_iterator(Iterator iterator, Function function)
-		-> decltype(boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function)))
+	-> decltype(boost::make_transform_iterator(iterator,
+			detail::bind_left(
+				detail::bind_left<decltype(apply_offset<Function,iterator_vector<Iterator>::type>),Function>,
+				apply_offset<Function,iterator_vector<Iterator>::type>,
+				function)));
 	{
-		return boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function));
+		return boost::make_transform_iterator(iterator,
+			detail::bind_left(
+				detail::bind_left<decltype(apply_offset<Function,iterator_vector<Iterator>::type>),Function>,
+				apply_offset<Function,iterator_vector<Iterator>::type>,
+				function));
+		);
 	}
 }
 
