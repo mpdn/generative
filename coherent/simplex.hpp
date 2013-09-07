@@ -11,67 +11,65 @@
 #define COHERENT_SIMPLEX_HPP
 
 #include <cmath>
-#include <type_traits>
-#include <Eigen/Core>
+#include <glm/glm.hpp>
 #include <coherent/permutation.hpp>
 
 namespace coherent
 {
 	namespace
 	{
-		template <typename Scalar>
-		Scalar grad1(int hash, Scalar x)
+		template <typename genType>
+		genType grad1(int hash, genType x)
 		{
 			int h = hash & 15;
-			Scalar grad = 1.0f + (h & 7);   // Gradient value 1.0, 2.0, ..., 8.0
+			genType grad = 1.0f + (h & 7);   // Gradient value 1.0, 2.0, ..., 8.0
 			if (h&8) grad = -grad;          // Set a random sign for the gradient
 			return ( grad * x );            // Multiply the gradient with the distance
 		}
 		
-		template <typename Scalar>
-		Scalar grad2(int hash, Scalar x, Scalar y)
+		template <typename genType>
+		genType grad2(int hash, genType x, genType y)
 		{
 			int h = hash & 7;        // Convert low 3 bits of hash code
-			Scalar u = h<4 ? x : y;  // into 8 simple gradient directions,
-			Scalar v = h<4 ? y : x;  // and compute the dot product with (x,y).
+			genType u = h<4 ? x : y;  // into 8 simple gradient directions,
+			genType v = h<4 ? y : x;  // and compute the dot product with (x,y).
 			return ((h&1)? -u : u) + ((h&2)? -2.0f*v : 2.0f*v);
 		}
 		
-		template <typename Scalar>
-		Scalar grad3(int hash, Scalar x, Scalar y , Scalar z ) {
+		template <typename genType>
+		genType grad3(int hash, genType x, genType y , genType z ) {
 			int h = hash & 15;     // Convert low 4 bits of hash code into 12 simple
-			Scalar u = h<8 ? x : y; // gradient directions, and compute dot product.
-			Scalar v = h<4 ? y : h==12||h==14 ? x : z; // Fix repeats at h = 12 to 15
+			genType u = h<8 ? x : y; // gradient directions, and compute dot product.
+			genType v = h<4 ? y : h==12||h==14 ? x : z; // Fix repeats at h = 12 to 15
 			return ((h&1)? -u : u) + ((h&2)? -v : v);
 		}
 
-		template <typename Scalar>
-		Scalar grad4( int hash, Scalar x, Scalar y, Scalar z, Scalar t ) {
+		template <typename genType>
+		genType grad4( int hash, genType x, genType y, genType z, genType t ) {
 			int h = hash & 31;      // Convert low 5 bits of hash code into 32 simple
-			Scalar u = h<24 ? x : y; // gradient directions, and compute dot product.
-			Scalar v = h<16 ? y : z;
-			Scalar w = h<8 ? z : t;
+			genType u = h<24 ? x : y; // gradient directions, and compute dot product.
+			genType v = h<16 ? y : z;
+			genType w = h<8 ? z : t;
 			return ((h&1)? -u : u) + ((h&2)? -v : v) + ((h&4)? -w : w);
 		}
 	}
 	
-	template <typename Scalar>
-	typename std::enable_if<std::is_floating_point<Scalar>::value, Scalar>::type
-		simplex(const Permutation& perm, Scalar x)
+	template <typename genType>
+	genType simplex(const Permutation& perm, const glm::detail::tvec1<genType>& position)
 	{
-		int i0 = std::floor(x);
+		int i0 = std::floor(position.x);
 		int i1 = i0 + 1;
-		Scalar x0 = x - i0;
-		Scalar x1 = x0 - 1.0f;
+		genType x0 = position.x - i0;
+		genType x1 = x0 - 1.0f;
 
-		Scalar n0, n1;
+		genType n0, n1;
 
-		Scalar t0 = 1.0f - x0*x0;
+		genType t0 = 1.0f - x0*x0;
 		//  if(t0 < 0.0f) t0 = 0.0f; // this never happens for the 1D case
 		t0 *= t0;
 		n0 = t0 * t0 * grad1(perm[i0 & 0xff], x0);
 
-		Scalar t1 = 1.0f - x1*x1;
+		genType t1 = 1.0f - x1*x1;
 		//  if(t1 < 0.0f) t1 = 0.0f; // this never happens for the 1D case
 		t1 *= t1;
 		n1 = t1 * t1 * grad1(perm[i1 & 0xff], x1);
@@ -83,34 +81,26 @@ namespace coherent
 		return (n0 + n1 + 0.076368899f) / 4.90976220002f + 0.5;
 	}
 	
-	template <typename Scalar>
-	Scalar simplex(const Permutation& perm, const Eigen::Matrix<Scalar, 1, 1>& position)
+	template <typename genType>
+	genType simplex(const Permutation& perm, const glm::detail::tvec2<genType>& position)
 	{
-		return simplex(perm, position[0]);
-	}
-	
-	template <typename Scalar>
-	Scalar simplex(const Permutation& perm, const Eigen::Matrix<Scalar, 2, 1>& position)
-	{
-		Scalar x = position[0], y = position[1];
-	
-		const Scalar F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
-		const Scalar G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
+		const genType F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
+		const genType G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
 
-		Scalar n0, n1, n2; // Noise contributions from the three corners
+		genType n0, n1, n2; // Noise contributions from the three corners
 
 		// Skew the input space to determine which simplex_traverse cell we're in
-		Scalar s = (x+y)*F2; // Hairy factor for 2D
-		Scalar xs = x + s;
-		Scalar ys = y + s;
+		genType s = (position.x+position.y)*F2; // Hairy factor for 2D
+		genType xs = position.x + s;
+		genType ys = position.y + s;
 		int i = std::floor(xs);
 		int j = std::floor(ys);
 
-		Scalar t = (Scalar)(i+j)*G2;
-		Scalar X0 = i-t; // Unskew the cell origin back to (x,y) space
-		Scalar Y0 = j-t;
-		Scalar x0 = x-X0; // The x,y distances from the cell origin
-		Scalar y0 = y-Y0;
+		genType t = (genType)(i+j)*G2;
+		genType X0 = i-t; // Unskew the cell origin back to (x,y) space
+		genType Y0 = j-t;
+		genType x0 = position.x-X0; // The x,y distances from the cell origin
+		genType y0 = y-Y0;
 
 		// For the 2D case, the simplex_traverse shape is an equilateral triangle.
 		// Determine which simplex_traverse we are in.
@@ -122,31 +112,31 @@ namespace coherent
 		// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
 		// c = (3-sqrt(3))/6
 
-		Scalar x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
-		Scalar y1 = y0 - j1 + G2;
-		Scalar x2 = x0 - 1.0f + 2.0f * G2; // Offsets for last corner in (x,y) unskewed coords
-		Scalar y2 = y0 - 1.0f + 2.0f * G2;
+		genType x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
+		genType y1 = y0 - j1 + G2;
+		genType x2 = x0 - 1.0f + 2.0f * G2; // Offsets for last corner in (x,y) unskewed coords
+		genType y2 = y0 - 1.0f + 2.0f * G2;
 
 		// Wrap the integer indices at 256, to avoid indexing perm[] out of bounds
 		int ii = i & 0xff;
 		int jj = j & 0xff;
 
 		// Calculate the contribution from the three corners
-		Scalar t0 = 0.5f - x0*x0-y0*y0;
+		genType t0 = 0.5f - x0*x0-y0*y0;
 		if(t0 < 0.0f) n0 = 0.0f;
 		else {
 			t0 *= t0;
 			n0 = t0 * t0 * grad2(perm[ii+perm[jj]], x0, y0);
 		}
 
-		Scalar t1 = 0.5f - x1*x1-y1*y1;
+		genType t1 = 0.5f - x1*x1-y1*y1;
 		if(t1 < 0.0f) n1 = 0.0f;
 		else {
 			t1 *= t1;
 			n1 = t1 * t1 * grad2(perm[ii+i1+perm[jj+j1]], x1, y1);
 		}
 
-		Scalar t2 = 0.5f - x2*x2-y2*y2;
+		genType t2 = 0.5f - x2*x2-y2*y2;
 		if(t2 < 0.0f) n2 = 0.0f;
 		else {
 			t2 *= t2;
@@ -159,33 +149,31 @@ namespace coherent
 		return (n0 + n1 + n2) / 0.044217709637707734f + 0.5f ;
 	}
 	
-	template <typename Scalar>
-	Scalar simplex(const Permutation& perm, const Eigen::Matrix<Scalar, 3, 1>& position)
+	template <typename genType>
+	genType simplex(const Permutation& perm, const glm::detail::tvec3<genType>& position)
 	{
-		Scalar x = position[0], y = position[1], z = position[2];
-	
 		// Simple skewing factors for the 3D case
-		const Scalar F3 = 0.333333333f;
-		const Scalar G3 = 0.166666667f;
+		const genType F3 = 0.333333333f;
+		const genType G3 = 0.166666667f;
 
-		Scalar n0, n1, n2, n3; // Noise contributions from the four corners
+		genType n0, n1, n2, n3; // Noise contributions from the four corners
 
 		// Skew the input space to determine which simplex cell we're in
-		Scalar s = (x+y+z)*F3; // Very nice and simple skew factor for 3D
-		Scalar xs = x+s;
-		Scalar ys = y+s;
-		Scalar zs = z+s;
+		genType s = (position.x+position.y+position.z)*F3; // Very nice and simple skew factor for 3D
+		genType xs = position.x+s;
+		genType ys = position.y+s;
+		genType zs = zposition.+s;
 		int i = std::floor(xs);
 		int j = std::floor(ys);
 		int k = std::floor(zs);
 
-		Scalar t = (Scalar)(i+j+k)*G3; 
-		Scalar X0 = i-t; // Unskew the cell origin back to (x,y,z) space
-		Scalar Y0 = j-t;
-		Scalar Z0 = k-t;
-		Scalar x0 = x-X0; // The x,y,z distances from the cell origin
-		Scalar y0 = y-Y0;
-		Scalar z0 = z-Z0;
+		genType t = (genType)(i+j+k)*G3; 
+		genType X0 = i-t; // Unskew the cell origin back to (x,y,z) space
+		genType Y0 = j-t;
+		genType Z0 = k-t;
+		genType x0 = position.x-X0; // The x,y,z distances from the cell origin
+		genType y0 = position.y-Y0;
+		genType z0 = position.z-Z0;
 
 		// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 		// Determine which simplex we are in.
@@ -210,15 +198,15 @@ namespace coherent
 		// a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
 		// c = 1/6.
 
-		Scalar x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
-		Scalar y1 = y0 - j1 + G3;
-		Scalar z1 = z0 - k1 + G3;
-		Scalar x2 = x0 - i2 + 2.0f*G3; // Offsets for third corner in (x,y,z) coords
-		Scalar y2 = y0 - j2 + 2.0f*G3;
-		Scalar z2 = z0 - k2 + 2.0f*G3;
-		Scalar x3 = x0 - 1.0f + 3.0f*G3; // Offsets for last corner in (x,y,z) coords
-		Scalar y3 = y0 - 1.0f + 3.0f*G3;
-		Scalar z3 = z0 - 1.0f + 3.0f*G3;
+		genType x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
+		genType y1 = y0 - j1 + G3;
+		genType z1 = z0 - k1 + G3;
+		genType x2 = x0 - i2 + 2.0f*G3; // Offsets for third corner in (x,y,z) coords
+		genType y2 = y0 - j2 + 2.0f*G3;
+		genType z2 = z0 - k2 + 2.0f*G3;
+		genType x3 = x0 - 1.0f + 3.0f*G3; // Offsets for last corner in (x,y,z) coords
+		genType y3 = y0 - 1.0f + 3.0f*G3;
+		genType z3 = z0 - 1.0f + 3.0f*G3;
 
 		// Wrap the integer indices at 256, to avoid indexing perm[] out of bounds
 		int ii = i & 0xff;
@@ -226,28 +214,28 @@ namespace coherent
 		int kk = k & 0xff;
 
 		// Calculate the contribution from the four corners
-		Scalar t0 = 0.6f - x0*x0 - y0*y0 - z0*z0;
+		genType t0 = 0.6f - x0*x0 - y0*y0 - z0*z0;
 		if(t0 < 0.0f) n0 = 0.0f;
 		else {
 		t0 *= t0;
 		n0 = t0 * t0 * grad(perm[ii+perm[jj+perm[kk]]], x0, y0, z0);
 		}
 
-		Scalar t1 = 0.6f - x1*x1 - y1*y1 - z1*z1;
+		genType t1 = 0.6f - x1*x1 - y1*y1 - z1*z1;
 		if(t1 < 0.0f) n1 = 0.0f;
 		else {
 		t1 *= t1;
 		n1 = t1 * t1 * grad(perm[ii+i1+perm[jj+j1+perm[kk+k1]]], x1, y1, z1);
 		}
 
-		Scalar t2 = 0.6f - x2*x2 - y2*y2 - z2*z2;
+		genType t2 = 0.6f - x2*x2 - y2*y2 - z2*z2;
 		if(t2 < 0.0f) n2 = 0.0f;
 		else {
 		t2 *= t2;
 		n2 = t2 * t2 * grad(perm[ii+i2+perm[jj+j2+perm[kk+k2]]], x2, y2, z2);
 		}
 
-		Scalar t3 = 0.6f - x3*x3 - y3*y3 - z3*z3;
+		genType t3 = 0.6f - x3*x3 - y3*y3 - z3*z3;
 		if(t3<0.0f) n3 = 0.0f;
 		else {
 		t3 *= t3;
@@ -259,11 +247,9 @@ namespace coherent
 		return 16.0f * (n0 + n1 + n2 + n3) + 0.5f; // TODO: The scale factor is preliminary!
 	}
 	
-	template <typename Scalar>
-	Scalar simplex(const Permutation& perm, const Eigen::Matrix<Scalar, 4, 1>& position)
+	template <typename genType>
+	genType simplex(const Permutation& perm, const glm::detail::tvec4<genType>& position)
 	{
-		Scalar x = position[0], y = position[1], z = position[2], w = position[3];
-		
 		// A lookup table to traverse the simplex around a given point in 4D.
 		// Details can be found where this table is used, in the 4D noise method.
 		/* TODO: This should not be required, backport it from Bill's GLSL code! */
@@ -278,32 +264,32 @@ namespace coherent
 			{2,1,0,3},{0,0,0,0},{0,0,0,0},{0,0,0,0},{3,1,0,2},{0,0,0,0},{3,2,0,1},{3,2,1,0}};
 		
 		// The skewing and unskewing factors are hairy again for the 4D case
-		const Scalar F4 = 0.309016994; // F4 = (Math.sqrt(5.0)-1.0)/4.0
-		const Scalar G4 = 0.138196601; // G4 = (5.0-Math.sqrt(5.0))/20.0
+		const genType F4 = 0.309016994; // F4 = (Math.sqrt(5.0)-1.0)/4.0
+		const genType G4 = 0.138196601; // G4 = (5.0-Math.sqrt(5.0))/20.0
 	
-		Scalar n0, n1, n2, n3, n4; // Noise contributions from the five corners
+		genType n0, n1, n2, n3, n4; // Noise contributions from the five corners
 	
 		// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
-		Scalar s = (x + y + z + w) * F4; // Factor for 4D skewing
-		Scalar xs = x + s;
-		Scalar ys = y + s;
-		Scalar zs = z + s;
-		Scalar ws = w + s;
+		genType s = (position.x + position.y + position.z + position.w) * F4; // Factor for 4D skewing
+		genType xs = position.x + s;
+		genType ys = position.y + s;
+		genType zs = position.z + s;
+		genType ws = position.w + s;
 		int i = std::floor(xs);
 		int j = std::floor(ys);
 		int k = std::floor(zs);
 		int l = std::floor(ws);
 
-		Scalar t = (i + j + k + l) * G4; // Factor for 4D unskewing
-		Scalar X0 = i - t; // Unskew the cell origin back to (x,y,z,w) space
-		Scalar Y0 = j - t;
-		Scalar Z0 = k - t;
-		Scalar W0 = l - t;
+		genType t = (i + j + k + l) * G4; // Factor for 4D unskewing
+		genType X0 = i - t; // Unskew the cell origin back to (x,y,z,w) space
+		genType Y0 = j - t;
+		genType Z0 = k - t;
+		genType W0 = l - t;
 
-		Scalar x0 = x - X0;  // The x,y,z,w distances from the cell origin
-		Scalar y0 = y - Y0;
-		Scalar z0 = z - Z0;
-		Scalar w0 = w - W0;
+		genType x0 = x - X0;  // The x,y,z,w distances from the cell origin
+		genType y0 = y - Y0;
+		genType z0 = z - Z0;
+		genType w0 = w - W0;
 
 		// For the 4D case, the simplex is a 4D shape I won't even try to describe.
 		// To find out which of the 24 possible simplices we're in, we need to
@@ -346,22 +332,22 @@ namespace coherent
 		l3 = simplex4d[c][3]>=1 ? 1 : 0;
 		// The fifth corner has all coordinate offsets = 1, so no need to look that up.
 
-		Scalar x1 = x0 - i1 + G4; // Offsets for second corner in (x,y,z,w) coords
-		Scalar y1 = y0 - j1 + G4;
-		Scalar z1 = z0 - k1 + G4;
-		Scalar w1 = w0 - l1 + G4;
-		Scalar x2 = x0 - i2 + 2.0f*G4; // Offsets for third corner in (x,y,z,w) coords
-		Scalar y2 = y0 - j2 + 2.0f*G4;
-		Scalar z2 = z0 - k2 + 2.0f*G4;
-		Scalar w2 = w0 - l2 + 2.0f*G4;
-		Scalar x3 = x0 - i3 + 3.0f*G4; // Offsets for fourth corner in (x,y,z,w) coords
-		Scalar y3 = y0 - j3 + 3.0f*G4;
-		Scalar z3 = z0 - k3 + 3.0f*G4;
-		Scalar w3 = w0 - l3 + 3.0f*G4;
-		Scalar x4 = x0 - 1.0f + 4.0f*G4; // Offsets for last corner in (x,y,z,w) coords
-		Scalar y4 = y0 - 1.0f + 4.0f*G4;
-		Scalar z4 = z0 - 1.0f + 4.0f*G4;
-		Scalar w4 = w0 - 1.0f + 4.0f*G4;
+		genType x1 = x0 - i1 + G4; // Offsets for second corner in (x,y,z,w) coords
+		genType y1 = y0 - j1 + G4;
+		genType z1 = z0 - k1 + G4;
+		genType w1 = w0 - l1 + G4;
+		genType x2 = x0 - i2 + 2.0f*G4; // Offsets for third corner in (x,y,z,w) coords
+		genType y2 = y0 - j2 + 2.0f*G4;
+		genType z2 = z0 - k2 + 2.0f*G4;
+		genType w2 = w0 - l2 + 2.0f*G4;
+		genType x3 = x0 - i3 + 3.0f*G4; // Offsets for fourth corner in (x,y,z,w) coords
+		genType y3 = y0 - j3 + 3.0f*G4;
+		genType z3 = z0 - k3 + 3.0f*G4;
+		genType w3 = w0 - l3 + 3.0f*G4;
+		genType x4 = x0 - 1.0f + 4.0f*G4; // Offsets for last corner in (x,y,z,w) coords
+		genType y4 = y0 - 1.0f + 4.0f*G4;
+		genType z4 = z0 - 1.0f + 4.0f*G4;
+		genType w4 = w0 - 1.0f + 4.0f*G4;
 
 		// Wrap the integer indices at 256, to avoid indexing perm[] out of bounds
 		int ii = i & 0xff;
@@ -370,35 +356,35 @@ namespace coherent
 		int ll = l & 0xff;
 
 		// Calculate the contribution from the five corners
-		Scalar t0 = 0.6f - x0*x0 - y0*y0 - z0*z0 - w0*w0;
+		genType t0 = 0.6f - x0*x0 - y0*y0 - z0*z0 - w0*w0;
 		if(t0 < 0.0f) n0 = 0.0f;
 		else {
 			t0 *= t0;
 			n0 = t0 * t0 * grad(perm[ii+perm[jj+perm[kk+perm[ll]]]], x0, y0, z0, w0);
 		}
 
-		Scalar t1 = 0.6f - x1*x1 - y1*y1 - z1*z1 - w1*w1;
+		genType t1 = 0.6f - x1*x1 - y1*y1 - z1*z1 - w1*w1;
 		if(t1 < 0.0f) n1 = 0.0f;
 		else {
 			t1 *= t1;
 			n1 = t1 * t1 * grad(perm[ii+i1+perm[jj+j1+perm[kk+k1+perm[ll+l1]]]], x1, y1, z1, w1);
 		}
 
-		Scalar t2 = 0.6f - x2*x2 - y2*y2 - z2*z2 - w2*w2;
+		genType t2 = 0.6f - x2*x2 - y2*y2 - z2*z2 - w2*w2;
 		if(t2 < 0.0f) n2 = 0.0f;
 		else {
 			t2 *= t2;
 			n2 = t2 * t2 * grad(perm[ii+i2+perm[jj+j2+perm[kk+k2+perm[ll+l2]]]], x2, y2, z2, w2);
 		}
 
-		Scalar t3 = 0.6f - x3*x3 - y3*y3 - z3*z3 - w3*w3;
+		genType t3 = 0.6f - x3*x3 - y3*y3 - z3*z3 - w3*w3;
 		if(t3 < 0.0f) n3 = 0.0f;
 		else {
 			t3 *= t3;
 			n3 = t3 * t3 * grad(perm[ii+i3+perm[jj+j3+perm[kk+k3+perm[ll+l3]]]], x3, y3, z3, w3);
 		}
 
-		Scalar t4 = 0.6f - x4*x4 - y4*y4 - z4*z4 - w4*w4;
+		genType t4 = 0.6f - x4*x4 - y4*y4 - z4*z4 - w4*w4;
 		if(t4 < 0.0f) n4 = 0.0f;
 		else {
 			t4 *= t4;
@@ -409,40 +395,33 @@ namespace coherent
 		return 13.5f * (n0 + n1 + n2 + n3 + n4) + 0.5; // TODO: The scale factor is preliminary!
 	}
 	
-	template <typename Derived>
-	typename std::enable_if<Derived::RowsAtCompileTime == 1, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
-	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 1, 1>(position));
-	}
-	
-	template <typename Derived>
-	typename std::enable_if<Derived::RowsAtCompileTime == 2, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
-	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 2, 1>(position));
-	}
-	
-	template <typename Derived>
-	typename std::enable_if<Derived::RowsAtCompileTime == 3, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
-	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 3, 1>(position));
-	}
-	
-	template <typename Derived>
-	typename std::enable_if<Derived::RowsAtCompileTime == 4, typename Derived::Scalar>::type
-		simplex(const Permutation& perm, const Eigen::MatrixBase<Derived>& position)
-	{
-		return simplex(perm, Eigen::Matrix<typename Derived::Scalar, 4, 1>(position));
-	}
-	
 	/// A function object that can be called like the simplex function. Use this
 	/// as a function pointer to the simplex function.
 	struct Simplex
 	{
-		template <typename Derived>
-		auto operator() (const Permutation& perm, const Eigen::MatrixBase<Derived>& position) const
+		template <typename genType>
+		auto operator() (const Permutation& perm, const glm::detail::tvec1<genType>& position) const
+			-> decltype(simplex(perm, position))
+		{
+			return simplex(perm, position);
+		}
+		
+		template <typename genType>
+		auto operator() (const Permutation& perm, const glm::detail::tvec2<genType>& position) const
+			-> decltype(simplex(perm, position))
+		{
+			return simplex(perm, position);
+		}
+		
+		template <typename genType>
+		auto operator() (const Permutation& perm, const glm::detail::tvec3<genType>& position) const
+			-> decltype(simplex(perm, position))
+		{
+			return simplex(perm, position);
+		}
+		
+		template <typename genType>
+		auto operator() (const Permutation& perm, const glm::detail::tvec4<genType>& position) const
 			-> decltype(simplex(perm, position))
 		{
 			return simplex(perm, position);
