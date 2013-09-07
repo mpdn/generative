@@ -15,7 +15,7 @@ namespace coherent
 	{
 		private:
 		const static unsigned int size = 256;
-		unsigned char perm[size * 2];
+		unsigned char perm[size];
 		
 		public:
 		/// Creates a permutation using a random number generator
@@ -27,7 +27,6 @@ namespace coherent
 				perm[i] = i;
 				
 			std::shuffle(perm, perm + size, prng);
-			std::copy(perm, perm + size, perm + size);
 		}
 		
 		/// Creates a permutation from another sequence
@@ -36,24 +35,23 @@ namespace coherent
 		template<typename Iterator>
 		explicit Permutation(Iterator begin, Iterator end)
 		{
-#ifndef NDEBUG
-			assert(std::distance(begin, end) == size);
-#endif
-			std::copy(begin, end, perm);
+			assert(std::distance(begin, end) == size &&
+				"Distance from begin to end must qual size (256)");
+			std::copy_n(begin, size, perm);
 #ifndef NDEBUG
 			std::sort(perm, perm + size);
-			assert(std::distance(perm, std::unique(perm, perm + size)) == size);
+			assert(std::distance(perm, std::unique(perm, perm + size)) == size &&
+				"Values in begin to end must be a permutation of 0 to 256 (no duplicate values)");
 			std::copy(begin, end, perm);
 #endif
 		}
 		
 		
 		/// Returns the permutation value at a certain index
-		/// @param index the index of the value to return. Allowed range is 0 <= i < 512. The last 256 values are the a repetition of the first
-		/// 256.
+		/// @param index the index of the value to return
 		unsigned char operator[](unsigned int index) const
 		{
-			return perm[index];
+			return perm[index % 256];
 		}
 		
 		/// The iterator type used when iterator over the permutation
