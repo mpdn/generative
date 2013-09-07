@@ -1,0 +1,3 @@
+[submodule "glm"]
+	path = glm
+	url = https://github.com/Groovounet/glm.git

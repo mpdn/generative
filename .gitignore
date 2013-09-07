@@ -14,3 +14,8 @@
 
 #Hidden backup files
 *.*~
+
+#Because of ungit
+glm/*
+examples/tga
+examples/bin
