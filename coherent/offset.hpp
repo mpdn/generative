@@ -9,7 +9,7 @@
 #include <random>
 #include <glm/glm.hpp>
 #include <boost/iterator/transform_iterator.hpp>
-#include <coherent/bind_left.hpp>
+#include <coherent/vector_traits.hpp>
 
 #ifndef COHERENT_IGNORE_BOOST_RESULT_OF
 #ifndef BOOST_RESULT_OF_USE_DECLTYPE
@@ -21,19 +21,46 @@ namespace coherent
 {
 	namespace
 	{
-		template <typename Iterator>
-		struct iterator_vector
-		{
-			typedef typename std::iterator_traits<Iterator>::value_type type;
-			static_assert(detail::is_vector<type>::value, "Must be an iterator of vectors");
-		};
-		
+		/// Provides a function object which applies an offset to a function
+		/// before calling it.
 		template <typename Function, typename Vector>
-		auto apply_offset(Function function, Vector offset, Vector position)
-		-> decltype(function(offset + position))
+		class OffsetPositionFunctor
 		{
-			return function(offset + position);
-		}
+			Function function;
+			Vector offset;
+
+			public:
+			OffsetPositionFunctor(Function _function, Vector _offset)
+				: function(_function), offset(_offset)
+			{ }
+			
+			auto operator()(const Vector& position) const
+				-> decltype(function(offset + position))
+			{
+				return function(offset + position);
+			}
+		};
+
+		/// Function object that, given a function, binds a offset to it and 
+		/// returns a OffsetPositionFunctor that then applies the offset to a
+		/// position.
+		template <typename Function>
+		class OffsetFunctor
+		{
+			Function function;
+
+			public:			
+			OffsetFunctor(Function _function)
+				: function(_function)
+			{ }
+
+			template <typename Vector>
+			OffsetPositionFunctor<Function, Vector> operator()(const Vector& offset) const
+			{
+				detail::assert_vector<Vector>();
+				return OffsetPositionFunctor<Function, Vector>(function, offset);
+			}
+		};
 	}
 	
 	/// Fills a vector with random values
@@ -65,7 +92,8 @@ namespace coherent
 	template <typename Iterator, class PRNG>
 	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::value_type magnitude)
 	{
-		std::generate(begin, end, std::bind(offset<PRNG, iterator_vector<Iterator>::type>, prng, magnitude));
+		detail::assert_vector<typename std::iterator_traits<Iterator>::value_type>();
+		std::generate(begin, end, std::bind(offset<typename std::iterator_traits<Iterator>::value_type, PRNG>, prng, magnitude));
 	}
 	
 	/// Creates an iterator which, given an iterator of vectors and a
@@ -81,18 +109,9 @@ namespace coherent
 	/// @param function an function that accepts a vector as pointed to by iterator
 	template <typename Iterator, typename Function>
 	auto make_offset_iterator(Iterator iterator, Function function)
-	-> decltype(boost::make_transform_iterator(iterator,
-			detail::bind_left(
-				detail::bind_left<decltype(apply_offset<Function, typename iterator_vector<Iterator>::type>),Function>,
-				apply_offset<Function, typename iterator_vector<Iterator>::type>,
-				function)))
+		-> decltype(boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function)))
 	{
-		return boost::make_transform_iterator(
-			iterator,
-			detail::bind_left(
-				detail::bind_left<decltype(apply_offset<Function, typename iterator_vector<Iterator>::type>), Function>,
-				apply_offset<Function, typename iterator_vector<Iterator>::type>,
-				function));
+		return boost::make_transform_iterator(iterator, OffsetFunctor<Function>(function));
 	}
 }
 
