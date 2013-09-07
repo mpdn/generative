@@ -11,7 +11,7 @@ namespace coherent
 		template <typename VectorType>
 		struct length
 		{
-			static_assert(false, "Length can only be used with glm vector types");
+			//static_assert(false, "Length can only be used with glm vector types");
 		};
 	
 		template <typename ScalarType>
@@ -24,7 +24,7 @@ namespace coherent
 		struct length<glm::detail::tvec4<ScalarType>> : std::integral_constant<int, 4> { };
 	
 		template <typename VectorType>
-		struct is_vector : std::false_type { }
+		struct is_vector : std::false_type { };
 		template <typename ScalarType>
 		struct is_vector<glm::detail::tvec1<ScalarType>> : std::true_type { };
 		template <typename ScalarType>
@@ -35,9 +35,9 @@ namespace coherent
 		struct is_vector<glm::detail::tvec4<ScalarType>> : std::true_type { };
 	
 		template <typename Type>
-		constexpr void assert_vector()
+		struct assert_vector
 		{
-			static_assert(is_vector<Type>, "Must be a vector type");
+			static_assert(is_vector<Type>::value, "Must be a vector type");
 		};
 	}
 }

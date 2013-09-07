@@ -28,7 +28,7 @@ namespace coherent
 	        typename Vector::value_type persistence,
 	        const Vector& position)
 	{
-		assert_vector<Vector>();
+		detail::assert_vector<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1;
 		for (Iterator i = begin; i != end; i++, per *= persistence, lac *= lacunarity)
@@ -55,7 +55,7 @@ namespace coherent
 	                 typename Vector::value_type persistence,
 	                 const Vector& position)
 	{
-		assert_vector<Vector>();
+		detail::assert_vector<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1, prev = 1;
 		for (Iterator i = begin; i != end; i++, per *= persistence, lac *= lacunarity)

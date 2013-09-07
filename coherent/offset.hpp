@@ -9,6 +9,7 @@
 #include <random>
 #include <glm/glm.hpp>
 #include <boost/iterator/transform_iterator.hpp>
+#include <coherent/bind_left.hpp>
 
 #ifndef COHERENT_IGNORE_BOOST_RESULT_OF
 #ifndef BOOST_RESULT_OF_USE_DECLTYPE
@@ -23,8 +24,8 @@ namespace coherent
 		template <typename Iterator>
 		struct iterator_vector
 		{
-			static_assert(detail::is_vector<Iterator>::value, "Must be an iterator of vectors");
-			typedef std::iterator_traits<Iterator>::value_type type;
+			typedef typename std::iterator_traits<Iterator>::value_type type;
+			static_assert(detail::is_vector<type>::value, "Must be an iterator of vectors");
 		};
 		
 		template <typename Function, typename Vector>
@@ -82,16 +83,16 @@ namespace coherent
 	auto make_offset_iterator(Iterator iterator, Function function)
 	-> decltype(boost::make_transform_iterator(iterator,
 			detail::bind_left(
-				detail::bind_left<decltype(apply_offset<Function,iterator_vector<Iterator>::type>),Function>,
-				apply_offset<Function,iterator_vector<Iterator>::type>,
-				function)));
+				detail::bind_left<decltype(apply_offset<Function, typename iterator_vector<Iterator>::type>),Function>,
+				apply_offset<Function, typename iterator_vector<Iterator>::type>,
+				function)))
 	{
-		return boost::make_transform_iterator(iterator,
+		return boost::make_transform_iterator(
+			iterator,
 			detail::bind_left(
-				detail::bind_left<decltype(apply_offset<Function,iterator_vector<Iterator>::type>),Function>,
-				apply_offset<Function,iterator_vector<Iterator>::type>,
+				detail::bind_left<decltype(apply_offset<Function, typename iterator_vector<Iterator>::type>), Function>,
+				apply_offset<Function, typename iterator_vector<Iterator>::type>,
 				function));
-		);
 	}
 }
 

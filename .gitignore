@@ -13,7 +13,7 @@
 *.a
 
 #Hidden backup files
-*.*~
+*~
 
 #Because of ungit
 glm/*

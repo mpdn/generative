@@ -100,7 +100,7 @@ namespace coherent
 		genType X0 = i-t; // Unskew the cell origin back to (x,y) space
 		genType Y0 = j-t;
 		genType x0 = position.x-X0; // The x,y distances from the cell origin
-		genType y0 = y-Y0;
+		genType y0 = position.y-Y0;
 
 		// For the 2D case, the simplex_traverse shape is an equilateral triangle.
 		// Determine which simplex_traverse we are in.
@@ -162,7 +162,7 @@ namespace coherent
 		genType s = (position.x+position.y+position.z)*F3; // Very nice and simple skew factor for 3D
 		genType xs = position.x+s;
 		genType ys = position.y+s;
-		genType zs = zposition.+s;
+		genType zs = position.z+s;
 		int i = std::floor(xs);
 		int j = std::floor(ys);
 		int k = std::floor(zs);
@@ -286,10 +286,10 @@ namespace coherent
 		genType Z0 = k - t;
 		genType W0 = l - t;
 
-		genType x0 = x - X0;  // The x,y,z,w distances from the cell origin
-		genType y0 = y - Y0;
-		genType z0 = z - Z0;
-		genType w0 = w - W0;
+		genType x0 = position.x - X0;  // The x,y,z,w distances from the cell origin
+		genType y0 = position.y - Y0;
+		genType z0 = position.z - Z0;
+		genType w0 = position.w - W0;
 
 		// For the 4D case, the simplex is a 4D shape I won't even try to describe.
 		// To find out which of the 24 possible simplices we're in, we need to
