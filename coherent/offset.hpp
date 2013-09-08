@@ -76,7 +76,7 @@ namespace coherent
 		detail::assert_vector<Vector>();
 		Vector output;
 		auto gen = std::bind(std::uniform_real_distribution<typename Vector::value_type>(-magnitude, magnitude), std::ref(prng));
-		for (int i = 0; i < output.length(); i++)
+		for (unsigned int i = 0; i < output.length(); i++)
 			output[i] = gen();
 		return output;
 	}
