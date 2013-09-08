@@ -26,12 +26,13 @@ namespace coherent
 	        Iterator end,
 	        typename Vector::value_type lacunarity,
 	        typename Vector::value_type persistence,
-	        const Vector& position)
+	        const Vector& position,
+	        typename Vector::value_type precision = 0)
 	{
 		detail::assert_vector<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1;
-		for (Iterator i = begin; i != end; i++, per *= persistence, lac *= lacunarity)
+		for (Iterator i = begin; i != end && per > precision; i++, per *= persistence, lac *= lacunarity)
 			sum += (*i)(position * lac) * per;
 		
 		//Apply scaling factor
@@ -53,12 +54,13 @@ namespace coherent
 	                 Iterator end,
 	                 typename Vector::value_type lacunarity,
 	                 typename Vector::value_type persistence,
-	                 const Vector& position)
+	                 const Vector& position,
+	                 typename Vector::value_type precision = 0)
 	{
 		detail::assert_vector<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1, prev = 1;
-		for (Iterator i = begin; i != end; i++, per *= persistence, lac *= lacunarity)
+		for (Iterator i = begin; i != end && per > precision; i++, per *= persistence, lac *= lacunarity)
 		{
 			typename Vector::value_type current = (*i)(position * lac) * per;
 			sum += current * prev;
