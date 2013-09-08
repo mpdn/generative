@@ -1,5 +1,5 @@
-CXXFLAGS=-I. -I/usr/include/eigen3 -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
-
+CXXFLAGS=-I. -Iglm -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
+CXX=clang++
 EXAMPLES=fadingfractal fractal ridgedfractal
 
 all: examples/tgas examples/bins

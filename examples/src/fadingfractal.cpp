@@ -1,7 +1,7 @@
 #include <array>
 #include <random>
 #include <cmath>
-#include <Eigen/Core>
+#include <glm/glm.hpp>
 #include <coherent/coherent.hpp>
 #include <boost/program_options.hpp>
 
@@ -27,7 +27,7 @@ void coherent::examples::FadingFractal::draw(TGAImage& image)
 	using namespace std::placeholders;
 	std::minstd_rand prng(seed);
 	coherent::Permutation perm(prng);
-	std::array<Eigen::Vector2f, 8> offsets;
+	std::array<glm::vec2, 8> offsets;
 
 	coherent::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
 
@@ -45,7 +45,7 @@ void coherent::examples::FadingFractal::draw(TGAImage& image)
 					                        end,
 					                        lacunarity,
 					                        persistence * ry,
-					                        Eigen::Vector2f(1000, 1000) + Eigen::Vector2f(rx,ry) * frequency) * 0xFF;
+					                        glm::vec2(1000, 1000) + glm::vec2(rx,ry) * frequency) * 0xFF;
 			
 			image.set(x,y, value, value, value);
 		}

@@ -1,6 +1,6 @@
 #include <array>
 #include <random>
-#include <Eigen/Core>
+#include <glm/glm.hpp>
 #include <coherent/coherent.hpp>
 
 #include "fractal.hpp"
@@ -26,7 +26,7 @@ void coherent::examples::Fractal::draw(TGAImage& image)
 
 	std::minstd_rand prng(seed);
 	coherent::Permutation perm(prng);
-	std::array<Eigen::Vector2f, 8> offsets;
+	std::array<glm::vec2, 8> offsets;
 
 	coherent::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
 
@@ -39,7 +39,7 @@ void coherent::examples::Fractal::draw(TGAImage& image)
 		for (int x = 0; x < image.width(); x++)
 		{
 			float rx = (float)x / image.width(), ry = (float)y / image.height();
-			float value = coherent::invert(coherent::fractal_feedback(begin, end, lacunarity, persistence, Eigen::Vector2f(rx,ry) * frequency)) * 0xFF;
+			float value = coherent::invert(coherent::fractal_feedback(begin, end, lacunarity, persistence, glm::vec2(rx,ry) * frequency)) * 0xFF;
 			image.set(x,y, value, value, value);
 		}
 }
