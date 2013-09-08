@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <functional>
 #include <random>
-#include <Eigen/Core>
+#include <glm/glm.hpp>
 #include <boost/iterator/transform_iterator.hpp>
+#include <coherent/vector_traits.hpp>
 
 #ifndef COHERENT_IGNORE_BOOST_RESULT_OF
 #ifndef BOOST_RESULT_OF_USE_DECLTYPE
@@ -22,26 +23,24 @@ namespace coherent
 	{
 		/// Provides a function object which applies an offset to a function
 		/// before calling it.
-		template <typename Function, typename Scalar, int dimensions>
+		template <typename Function, typename Vector>
 		class OffsetPositionFunctor
 		{
-			typedef typename Eigen::Matrix<Scalar, dimensions, 1> Offset;
 			Function function;
-			Offset offset;
-		
+			Vector offset;
+
 			public:
-			OffsetPositionFunctor(Function _function, Offset _offset)
+			OffsetPositionFunctor(Function _function, Vector _offset)
 				: function(_function), offset(_offset)
 			{ }
-		
-			template <typename Derived>
-			auto operator()(const Eigen::MatrixBase<Derived>& position) const
+			
+			auto operator()(const Vector& position) const
 				-> decltype(function(offset + position))
 			{
 				return function(offset + position);
 			}
 		};
-		
+
 		/// Function object that, given a function, binds a offset to it and 
 		/// returns a OffsetPositionFunctor that then applies the offset to a
 		/// position.
@@ -49,33 +48,37 @@ namespace coherent
 		class OffsetFunctor
 		{
 			Function function;
-			
+
 			public:			
 			OffsetFunctor(Function _function)
 				: function(_function)
 			{ }
-			
-			template <typename Derived>
-			OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime> operator()(const Eigen::MatrixBase<Derived>& offset) const
+
+			template <typename Vector>
+			OffsetPositionFunctor<Function, Vector> operator()(const Vector& offset) const
 			{
-				return OffsetPositionFunctor<Function, typename Derived::Scalar, Derived::RowsAtCompileTime>(function, offset);
+				detail::assert_vector<Vector>();
+				return OffsetPositionFunctor<Function, Vector>(function, offset);
 			}
 		};
 	}
 	
 	/// Fills a vector with random values
 	///
-	/// @tparam Derived the derived type of the output matrix
+	/// @tparam Vector the Vector type of the output matrix
 	/// @tparam PRNG the type of the random number generator
 	/// @param output the matrix to which the random values will be written to
 	/// @param prng the random number generator used to generate the random values
 	/// @param magnitude the maxmimum absolute value of each value
-	template <typename Derived, class PRNG>
-	void offset(Eigen::MatrixBase<Derived>& output, PRNG& prng, typename Derived::Scalar magnitude)
+	template <typename Vector, class PRNG>
+	Vector offset(PRNG& prng, typename Vector::value_type magnitude)
 	{
-		auto gen = std::bind(std::uniform_real_distribution<typename Derived::Scalar>(-magnitude, magnitude), std::ref(prng));
-		for (int i = 0; i < Derived::RowsAtCompileTime; i++)
+		detail::assert_vector<Vector>();
+		Vector output;
+		auto gen = std::bind(std::uniform_real_distribution<typename Vector::value_type>(-magnitude, magnitude), std::ref(prng));
+		for (unsigned int i = 0; i < output.length(); i++)
 			output[i] = gen();
+		return output;
 	}
 	
 	/// Fills a sequence of vectors with random values
@@ -87,10 +90,10 @@ namespace coherent
 	/// @param prng the random number generator used to generate the random values
 	/// @param magnitude the maxmimum absolute value of each value
 	template <typename Iterator, class PRNG>
-	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::Scalar magnitude)
+	void offsets(Iterator begin, Iterator end, PRNG& prng, typename std::iterator_traits<Iterator>::value_type::value_type magnitude)
 	{
-		for (Iterator i = begin; i != end; i++)
-			offset(*i, prng, magnitude);
+		detail::assert_vector<typename std::iterator_traits<Iterator>::value_type>();
+		std::generate(begin, end, std::bind(offset<typename std::iterator_traits<Iterator>::value_type, PRNG>, prng, magnitude));
 	}
 	
 	/// Creates an iterator which, given an iterator of vectors and a
