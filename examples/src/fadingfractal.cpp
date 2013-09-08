@@ -45,7 +45,7 @@ void coherent::examples::FadingFractal::draw(TGAImage& image)
 					                        end,
 					                        lacunarity,
 					                        persistence * ry,
-					                        glm::vec2(1000, 1000) + glm::vec2(rx,ry) * frequency) * 0xFF;
+					                        glm::vec2(rx,ry) * frequency) * 0xFF;
 			
 			image.set(x,y, value, value, value);
 		}
