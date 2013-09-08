@@ -1,20 +1,16 @@
-CXXFLAGS=-I. -I/usr/include/eigen3 -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
-
+CXXFLAGS=-I. -Iglm -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
 EXAMPLES=fadingfractal fractal ridgedfractal
 
-all: examples/tgas examples/bins
-
-examples/bin:
-	mkdir -p examples/bin
+all: examples/tgas
 
 examples/tga:
 	mkdir -p examples/tga
 
-examples/bin/%: examples/src/%.cpp $(wildcard examples/include/*) $(wildcard coherent/*) |examples/bin
-	$(CXX) $(CXXFLAGS) -O3 -DNDEBUG -Iexamples/include -o $@ $< -lboost_program_options
+examples/examples: $(wildcard examples/src/*) $(wildcard coherent/*)
+	$(CXX) $(CXXFLAGS) -o examples/examples $(wildcard examples/src/*.cpp)
 
-examples/tga/%.tga: examples/bin/% |examples/tga
-	$< -o $@
+examples/tga/%.tga: examples/examples |examples/tga
+	examples/examples $@ $(notdir $(basename $@))
 
 examples/bins: $(addprefix examples/bin/,$(EXAMPLES))
 

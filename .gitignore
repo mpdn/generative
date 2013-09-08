@@ -13,4 +13,6 @@
 *.a
 
 #Hidden backup files
-*.*~
+*~
+examples/tga
+examples/examples
