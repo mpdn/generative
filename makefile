@@ -6,7 +6,7 @@ all: examples/tgas
 examples/tga:
 	mkdir -p examples/tga
 
-examples/examples: $(wildcard examples/src/*) $(wildcard coherent/*)
+examples/examples: $(wildcard examples/src/*) $(wildcard generative/*)
 	$(CXX) $(CXXFLAGS) -o examples/examples $(wildcard examples/src/*.cpp)
 
 examples/tga/%.tga: examples/examples |examples/tga

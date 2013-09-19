@@ -4,7 +4,7 @@
 #include <vector>
 #include <cassert>
 
-namespace coherent
+namespace generative
 {
 	namespace examples
 	{

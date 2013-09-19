@@ -5,10 +5,10 @@
 #define COHERENT_FRACTAL_HPP
 
 #include <cassert>
-#include <coherent/vector_traits.hpp>
+#include <generative/vector_traits.hpp>
 #include <glm/glm.hpp>
 
-namespace coherent
+namespace generative
 {
 	/// Calculates the sum of several noise functions (called octaves) with
 	/// rising frequency and decreasing amplitude. The range of the return type

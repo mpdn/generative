@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace coherent
+namespace generative
 {
 	/// Given a value in the range [0,1], returns the absolute value, treating
 	/// 0.5 as 0. Eg. 0 will become 1, 0.5 will become 0, and values above 0.5

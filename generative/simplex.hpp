@@ -12,9 +12,9 @@
 
 #include <cmath>
 #include <glm/glm.hpp>
-#include <coherent/permutation.hpp>
+#include <generative/permutation.hpp>
 
-namespace coherent
+namespace generative
 {
 	namespace
 	{

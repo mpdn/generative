@@ -1,11 +1,11 @@
 #include <array>
 #include <random>
 #include <glm/glm.hpp>
-#include <coherent/coherent.hpp>
+#include <generative/generative.hpp>
 #include "examples.hpp"
 #include "TGAImage.hpp"
 
-void coherent::examples::fractal(coherent::examples::TGAImage& image)
+void generative::examples::fractal(generative::examples::TGAImage& image)
 {	
 	using namespace std::placeholders;
 	
@@ -15,21 +15,21 @@ void coherent::examples::fractal(coherent::examples::TGAImage& image)
 	const float persistence = 0.5f;
 	
 	std::minstd_rand prng(seed);
-	coherent::Permutation perm(prng);
+	generative::Permutation perm(prng);
 	std::array<glm::vec2, 8> offsets;
 
-	coherent::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
+	generative::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
 
-	auto simplex = std::bind(coherent::Simplex(), std::cref(perm), _1);
+	auto simplex = std::bind(generative::Simplex(), std::cref(perm), _1);
 
-	auto begin = coherent::make_offset_iterator(offsets.begin(), simplex),
-		 end   = coherent::make_offset_iterator(offsets.end(), simplex);
+	auto begin = generative::make_offset_iterator(offsets.begin(), simplex),
+		 end   = generative::make_offset_iterator(offsets.end(), simplex);
 	
 	for (int y = 0; y < image.height(); y++)
 		for (int x = 0; x < image.width(); x++)
 		{
 			float rx = (float)x / image.width(), ry = (float)y / image.height();
-			float value = coherent::invert(coherent::fractal_feedback(begin, end, lacunarity, persistence, glm::vec2(rx,ry) * frequency)) * 0xFF;
+			float value = generative::invert(generative::fractal_feedback(begin, end, lacunarity, persistence, glm::vec2(rx,ry) * frequency)) * 0xFF;
 			image.set(x,y, value, value, value);
 		}
 }

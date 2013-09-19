@@ -9,15 +9,15 @@
 #include <random>
 #include <glm/glm.hpp>
 #include <boost/iterator/transform_iterator.hpp>
-#include <coherent/vector_traits.hpp>
+#include <generative/vector_traits.hpp>
 
 #ifndef COHERENT_IGNORE_BOOST_RESULT_OF
 #ifndef BOOST_RESULT_OF_USE_DECLTYPE
-#error libcoherent requires BOOST_RESULT_OF_USE_DECLTYPE to be defined in order to compile (this check can be ignored by defining COHERENT_IGNORE_BOOST_RESULT_OF)
+#error generative requires BOOST_RESULT_OF_USE_DECLTYPE to be defined in order to compile (this check can be ignored by defining COHERENT_IGNORE_BOOST_RESULT_OF)
 #endif
 #endif
 
-namespace coherent
+namespace generative
 {
 	namespace
 	{

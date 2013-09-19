@@ -3,7 +3,7 @@
 
 #include "TGAImage.hpp"
 
-namespace coherent
+namespace generative
 {
 	namespace examples
 	{

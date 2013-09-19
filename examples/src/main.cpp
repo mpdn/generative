@@ -10,15 +10,15 @@ int main(int argc, char **argv)
 {	
 	int width = 512, height = 512;
 	
-	void (*example)(coherent::examples::TGAImage& image);
-	std::map<std::string, void (*)(coherent::examples::TGAImage& image)> examples;
-	examples["fractal"]       = coherent::examples::fractal;
-	examples["fadingfractal"] = coherent::examples::fadingfractal;
-	examples["ridgedfractal"] = coherent::examples::ridgedfractal;
+	void (*example)(generative::examples::TGAImage& image);
+	std::map<std::string, void (*)(generative::examples::TGAImage& image)> examples;
+	examples["fractal"]       = generative::examples::fractal;
+	examples["fadingfractal"] = generative::examples::fadingfractal;
+	examples["ridgedfractal"] = generative::examples::ridgedfractal;
 	
 	if (argc < 3 || argc > 5)
 	{
-		std::cout << "libcoherent examples" << std::endl;
+		std::cout << "generative examples" << std::endl;
 		std::cout << "Usage: examples file type [width] [height]" << std::endl;
 		std::cout << "Available example types:" << std::endl;
 		
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 			throw std::out_of_range("Width and height must not be negative");
 		
 		std::ofstream output(argv[1]);
-		coherent::examples::TGAImage image(width, height);
+		generative::examples::TGAImage image(width, height);
 		example(image);
 		image.write(output);
 	}

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace coherent
+namespace generative
 {
 	///
 	/// A permutation of the values under 256. Used in certain noise functions.

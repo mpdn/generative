@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <glm/glm.hpp>
 
-namespace coherent
+namespace generative
 {
 	namespace detail
 	{
