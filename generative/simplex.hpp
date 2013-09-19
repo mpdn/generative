@@ -1,6 +1,3 @@
-//Copyright (c) 2013 Mike Pedersen
-//See the file license.txt for copying permission.
-
 /// @file
 /// Simplex noise functions. An effecient gradient noise function.
 ///

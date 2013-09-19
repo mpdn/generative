@@ -1,6 +1,3 @@
-//Copyright (c) 2013 Mike Pedersen
-//See the file license.txt for copying permission.
-
 #ifndef COHERENT_PERMUTATION_HPP
 #define COHERENT_PERMUTATION_HPP
 

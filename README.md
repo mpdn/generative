@@ -13,7 +13,7 @@ Dependencies
 
 License
 -------
-Generative is released under the MIT license. See license.txt for more information.
+Generative is released under the MIT license. See LICENSE for more information.
 
 Credits
 -------
