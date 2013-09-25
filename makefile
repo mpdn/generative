@@ -1,5 +1,5 @@
 CXXFLAGS=-I. -Iglm -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
-EXAMPLES=fadingfractal fractal ridgedfractal
+EXAMPLES=fadingfractal fractal ridgedfractal seamlessfractal
 
 all: examples/tgas
 

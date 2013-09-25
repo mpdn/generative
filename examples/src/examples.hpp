@@ -10,6 +10,7 @@ namespace generative
 		void fractal(TGAImage& image);
 		void fadingfractal(TGAImage& image);
 		void ridgedfractal(TGAImage& image);
+		void seamlessfractal(generative::examples::TGAImage& image);
 	}
 }
 

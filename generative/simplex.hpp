@@ -357,35 +357,35 @@ namespace generative
 		if(t0 < 0.0f) n0 = 0.0f;
 		else {
 			t0 *= t0;
-			n0 = t0 * t0 * grad(perm[ii+perm[jj+perm[kk+perm[ll]]]], x0, y0, z0, w0);
+			n0 = t0 * t0 * grad4(perm[ii+perm[jj+perm[kk+perm[ll]]]], x0, y0, z0, w0);
 		}
 
 		genType t1 = 0.6f - x1*x1 - y1*y1 - z1*z1 - w1*w1;
 		if(t1 < 0.0f) n1 = 0.0f;
 		else {
 			t1 *= t1;
-			n1 = t1 * t1 * grad(perm[ii+i1+perm[jj+j1+perm[kk+k1+perm[ll+l1]]]], x1, y1, z1, w1);
+			n1 = t1 * t1 * grad4(perm[ii+i1+perm[jj+j1+perm[kk+k1+perm[ll+l1]]]], x1, y1, z1, w1);
 		}
 
 		genType t2 = 0.6f - x2*x2 - y2*y2 - z2*z2 - w2*w2;
 		if(t2 < 0.0f) n2 = 0.0f;
 		else {
 			t2 *= t2;
-			n2 = t2 * t2 * grad(perm[ii+i2+perm[jj+j2+perm[kk+k2+perm[ll+l2]]]], x2, y2, z2, w2);
+			n2 = t2 * t2 * grad4(perm[ii+i2+perm[jj+j2+perm[kk+k2+perm[ll+l2]]]], x2, y2, z2, w2);
 		}
 
 		genType t3 = 0.6f - x3*x3 - y3*y3 - z3*z3 - w3*w3;
 		if(t3 < 0.0f) n3 = 0.0f;
 		else {
 			t3 *= t3;
-			n3 = t3 * t3 * grad(perm[ii+i3+perm[jj+j3+perm[kk+k3+perm[ll+l3]]]], x3, y3, z3, w3);
+			n3 = t3 * t3 * grad4(perm[ii+i3+perm[jj+j3+perm[kk+k3+perm[ll+l3]]]], x3, y3, z3, w3);
 		}
 
 		genType t4 = 0.6f - x4*x4 - y4*y4 - z4*z4 - w4*w4;
 		if(t4 < 0.0f) n4 = 0.0f;
 		else {
 			t4 *= t4;
-			n4 = t4 * t4 * grad(perm[ii+1+perm[jj+1+perm[kk+1+perm[ll+1]]]], x4, y4, z4, w4);
+			n4 = t4 * t4 * grad4(perm[ii+1+perm[jj+1+perm[kk+1+perm[ll+1]]]], x4, y4, z4, w4);
 		}
 
 		// Sum up and scale the result to cover the range [-1,1]

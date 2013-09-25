@@ -5,7 +5,7 @@
 #include "examples.hpp"
 #include "TGAImage.hpp"
 
-void generative::examples::fractal(generative::examples::TGAImage& image)
+void generative::examples::seamlessfractal(generative::examples::TGAImage& image)
 {	
 	using namespace std::placeholders;
 	
@@ -16,7 +16,7 @@ void generative::examples::fractal(generative::examples::TGAImage& image)
 	
 	std::minstd_rand prng(seed);
 	generative::Permutation perm(prng);
-	std::array<glm::vec2, 8> offsets;
+	std::array<glm::vec4, 8> offsets;
 
 	generative::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
 
@@ -28,8 +28,8 @@ void generative::examples::fractal(generative::examples::TGAImage& image)
 	for (int y = 0; y < image.height(); y++)
 		for (int x = 0; x < image.width(); x++)
 		{
-			float rx = (float)x / image.width(), ry = (float)y / image.height();
-			float value = generative::fractal(begin, end, lacunarity, persistence, glm::vec2(rx,ry) * frequency) * 0xFF;
+			glm::vec4 point = generative::seamless(1.0f, glm::vec2((float)x / image.width(), (float)y / image.height()));
+			float value = generative::fractal(begin, end, lacunarity, persistence, point * frequency) * 0xFF;
 			image.set(x,y, value, value, value);
 		}
 }

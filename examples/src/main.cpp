@@ -12,9 +12,10 @@ int main(int argc, char **argv)
 	
 	void (*example)(generative::examples::TGAImage& image);
 	std::map<std::string, void (*)(generative::examples::TGAImage& image)> examples;
-	examples["fractal"]       = generative::examples::fractal;
-	examples["fadingfractal"] = generative::examples::fadingfractal;
-	examples["ridgedfractal"] = generative::examples::ridgedfractal;
+	examples["fractal"]         = generative::examples::fractal;
+	examples["fadingfractal"]   = generative::examples::fadingfractal;
+	examples["ridgedfractal"]   = generative::examples::ridgedfractal;
+	examples["seamlessfractal"] = generative::examples::seamlessfractal;
 	
 	if (argc < 3 || argc > 5)
 	{
