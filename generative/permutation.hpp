@@ -5,7 +5,7 @@
 #include <cassert>
 
 namespace generative
-{
+{	
 	///
 	/// A permutation of the values under 256. Used in certain noise functions.
 	class Permutation
@@ -30,7 +30,7 @@ namespace generative
 		/// @param begin the beginning of the sequence
 		/// @param end the end of the sequence
 		template<typename Iterator>
-		explicit Permutation(Iterator begin, Iterator end)
+		Permutation(Iterator begin, Iterator end)
 		{
 			assert(std::distance(begin, end) == size &&
 				"Distance from begin to end must qual size (256)");
@@ -39,7 +39,7 @@ namespace generative
 			std::sort(perm, perm + size);
 			assert(std::distance(perm, std::unique(perm, perm + size)) == size &&
 				"Values in begin to end must be a permutation of 0 to 256 (no duplicate values)");
-			std::copy(begin, end, perm);
+			std::copy_n(begin, size, perm);
 #endif
 		}
 		
