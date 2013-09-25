@@ -1,5 +1,5 @@
-#ifndef COHERENT_FRACTAL_HPP
-#define COHERENT_FRACTAL_HPP
+#ifndef GENERATIVE_FRACTAL_HPP
+#define GENERATIVE_FRACTAL_HPP
 
 #include <cassert>
 #include <generative/vector_traits.hpp>

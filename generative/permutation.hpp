@@ -1,5 +1,5 @@
-#ifndef COHERENT_PERMUTATION_HPP
-#define COHERENT_PERMUTATION_HPP
+#ifndef GENERATIVE_PERMUTATION_HPP
+#define GENERATIVE_PERMUTATION_HPP
 
 #include <algorithm>
 #include <cassert>

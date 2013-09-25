@@ -1,5 +1,5 @@
-#ifndef COHERENT_MATH_HPP
-#define COHERENT_MATH_HPP
+#ifndef GENERATIVE_MATH_HPP
+#define GENERATIVE_MATH_HPP
 
 #include <cmath>
 

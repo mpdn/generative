@@ -1,5 +1,5 @@
-#ifndef COHERENT_OFFSET_HPP
-#define COHERENT_OFFSET_HPP
+#ifndef GENERATIVE_OFFSET_HPP
+#define GENERATIVE_OFFSET_HPP
 
 #include <algorithm>
 #include <functional>
@@ -8,9 +8,9 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <generative/vector_traits.hpp>
 
-#ifndef COHERENT_IGNORE_BOOST_RESULT_OF
+#ifndef GENERATIVE_IGNORE_BOOST_RESULT_OF
 #ifndef BOOST_RESULT_OF_USE_DECLTYPE
-#error generative requires BOOST_RESULT_OF_USE_DECLTYPE to be defined in order to compile (this check can be ignored by defining COHERENT_IGNORE_BOOST_RESULT_OF)
+#error generative requires BOOST_RESULT_OF_USE_DECLTYPE to be defined in order to compile (this check can be ignored by defining GENERATIVE_IGNORE_BOOST_RESULT_OF)
 #endif
 #endif
 

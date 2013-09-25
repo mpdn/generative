@@ -1,5 +1,5 @@
-#ifndef COHERENT_VEC_INFO_HPP
-#define COHERENT_VEC_INFO_HPP
+#ifndef GENERATIVE_VEC_INFO_HPP
+#define GENERATIVE_VEC_INFO_HPP
 
 #include <type_traits>
 #include <glm/glm.hpp>
@@ -42,5 +42,5 @@ namespace generative
 	}
 }
 
-#endif // COHERENT_VEC_INFO_HPP
+#endif // GENERATIVE_VEC_INFO_HPP
 

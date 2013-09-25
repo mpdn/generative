@@ -4,8 +4,8 @@
 /// These functions are heavily based on simplexnoise1234.h and simplexnoise1234.cpp
 /// by Stefan Gustavson: webstaff.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
 
-#ifndef COHERENT_SIMPLEX_HPP
-#define COHERENT_SIMPLEX_HPP
+#ifndef GENERATIVE_SIMPLEX_HPP
+#define GENERATIVE_SIMPLEX_HPP
 
 #include <cmath>
 #include <glm/glm.hpp>
