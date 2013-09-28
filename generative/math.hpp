@@ -11,6 +11,7 @@ namespace generative
 	template <typename FloatType>
 	FloatType fabs(FloatType value)
 	{
+		detail::assert_scalar<FloatType>();
 		return std::fabs(value * 2 - 1);
 	}
 	
@@ -19,6 +20,7 @@ namespace generative
 	template <typename FloatType>
 	FloatType invert(FloatType value)
 	{
+		detail::assert_scalar<FloatType>();
 		return 1 - value;
 	}
 	
@@ -27,6 +29,7 @@ namespace generative
 	template <typename FloatType>
 	FloatType square(FloatType value)
 	{
+		detail::assert_scalar<FloatType>();
 		return value * value;
 	}
 }

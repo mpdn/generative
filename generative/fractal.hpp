@@ -26,7 +26,7 @@ namespace generative
 	        const Vector& position,
 	        typename Vector::value_type precision = 0)
 	{
-		detail::assert_vector<Vector>();
+		detail::assert_vector_or_scalar<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1;
 		for (Iterator i = begin; i != end && per > precision; i++, per *= persistence, lac *= lacunarity)
@@ -54,7 +54,7 @@ namespace generative
 	                 const Vector& position,
 	                 typename Vector::value_type precision = 0)
 	{
-		detail::assert_vector<Vector>();
+		detail::assert_vector_or_scalar<Vector>();
 		
 		typename Vector::value_type sum = 0, per = 1, lac = 1, prev = 1;
 		for (Iterator i = begin; i != end && per > precision; i++, per *= persistence, lac *= lacunarity)
@@ -77,6 +77,7 @@ namespace generative
 	template <typename genType>
 	int fractal_octaves(genType persistence, genType precision)
 	{
+		detail::assert_scalar<genType>();
 		return (int)std::ceil(std::log(precision) / std::log(persistence));
 	}
 }
