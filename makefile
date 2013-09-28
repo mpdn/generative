@@ -1,19 +1,21 @@
 CXXFLAGS=-I. -Iglm -std=c++11 -Wall -Wfatal-errors -DBOOST_RESULT_OF_USE_DECLTYPE
 EXAMPLES=fadingfractal fractal ridgedfractal seamlessfractal
 
-all: examples/tgas
+all: tgas
 
-examples/tga:
-	mkdir -p examples/tga
+tga:
+	mkdir -p tga
 
-examples/examples: $(wildcard examples/src/*) $(wildcard generative/*)
-	$(CXX) $(CXXFLAGS) -o examples/examples $(wildcard examples/src/*.cpp)
+examples-bin: $(wildcard examples/*) $(wildcard generative/*)
+	$(CXX) $(CXXFLAGS) -o examples-bin $(wildcard examples/*.cpp)
 
-examples/tga/%.tga: examples/examples |examples/tga
-	examples/examples $@ $(notdir $(basename $@))
+tga/%.tga: examples-bin |tga
+	./examples-bin $@ $(notdir $(basename $@))
 
-examples/bins: $(addprefix examples/bin/,$(EXAMPLES))
+tgas: $(addprefix tga/,$(addsuffix .tga, $(EXAMPLES)))
 
-examples/tgas: $(addprefix examples/tga/,$(addsuffix .tga, $(EXAMPLES)))
+clean:
+	rm -rf tga
+	rm -f examples-bin
 
 .PHONY: examples/bins examples/tgas

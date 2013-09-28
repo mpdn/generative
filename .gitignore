@@ -14,5 +14,6 @@
 
 #Hidden backup files
 *~
-examples/tga
-examples/examples
+
+tga/*
+examples-bin
