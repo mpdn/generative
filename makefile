@@ -18,4 +18,4 @@ clean:
 	rm -rf tga
 	rm -f examples-bin
 
-.PHONY: examples/bins examples/tgas
+.PHONY: tgas clean
