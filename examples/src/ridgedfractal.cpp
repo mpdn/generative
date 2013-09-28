@@ -15,12 +15,11 @@ void generative::examples::ridgedfractal(generative::examples::TGAImage& image)
 	const float persistence = 0.5f;
 	
 	std::minstd_rand prng(seed);
-	generative::Permutation perm(prng);
 	std::array<glm::vec2, 16> offsets;
 
 	generative::offsets(offsets.begin(), offsets.end(), prng, 1000.0f);
 
-	auto simplex = std::bind(generative::fabs<float>, std::bind(generative::Simplex(), std::cref(perm), _1));
+	auto simplex = std::bind(generative::fabs<float>, std::bind(generative::Simplex(), _1));
 
 	auto begin = generative::make_offset_iterator(offsets.begin(), simplex),
 		 end   = generative::make_offset_iterator(offsets.end(), simplex);

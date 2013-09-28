@@ -15,9 +15,4 @@ License
 -------
 Generative is released under the MIT license. See LICENSE for more information.
 
-Credits
--------
-* Mike Pedersen, noctune9@gmail.com
-* Simplex noise implementation by Stefan Gustavson: http://webstaff.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
-
 [1]:https://github.com/Noctune/libcoherent/wiki/Tutorial
