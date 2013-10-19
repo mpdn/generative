@@ -6,24 +6,49 @@
 
 namespace generative
 {
-	template <typename FloatType>
-	glm::detail::tvec2<FloatType> seamless(FloatType periodicity, FloatType value)
+	namespace
 	{
-		const FloatType tau = (FloatType)6.283185307179586;
-		FloatType s = value / periodicity * tau;
-		return glm::detail::tvec2<FloatType>(std::cos(s), std::sin(s)) / tau;
+		//These internal functions are neccesary to avoid relying on glm implementation details
+		
+		template <typename Vector, typename FloatType>
+		Vector seamless_internal(FloatType periodicity, FloatType value)
+		{
+			const FloatType tau = (FloatType)6.283185307179586;
+			FloatType s = value / periodicity * tau;
+			return Vector(std::cos(s), std::sin(s)) / tau;
+		}
+	
+		template <typename BigVector, typename SmallVector, typename FloatType>
+		BigVector seamless_internal(FloatType periodicity, const SmallVector& vector)
+		{
+			const FloatType tau = (FloatType)6.283185307179586;
+			FloatType s = vector.x / periodicity * tau,
+				      t = vector.y / periodicity * tau;
+			return BigVector(std::cos(s),
+				             std::cos(t),
+				             std::sin(s),
+				             std::sin(t)) / tau;
+		}
 	}
 	
-	template <typename FloatType>
-	glm::detail::tvec4<FloatType> seamless(FloatType periodicity, const glm::detail::tvec2<FloatType>& vector)
+	inline glm::vec2 seamless(float periodicity, float value)
 	{
-		const FloatType tau = (FloatType)6.283185307179586;
-		FloatType s = vector.x / periodicity * tau,
-		          t = vector.y / periodicity * tau;
-		return glm::detail::tvec4<FloatType>(std::cos(s),
-		                                     std::cos(t),
-		                                     std::sin(s),
-		                                     std::sin(t)) / tau;
+		return seamless_internal<glm::vec2, float>(periodicity, value);
+	}
+	
+	inline glm::dvec2 seamless(double periodicity, double value)
+	{
+		return seamless_internal<glm::dvec2, double>(periodicity, value);
+	}
+	
+	inline glm::vec4 seamless(float periodicity, glm::vec2 value)
+	{
+		return seamless_internal<glm::vec4, glm::vec2, float>(periodicity, value);
+	}
+	
+	inline glm::dvec4 seamless(double periodicity, glm::dvec2 value)
+	{
+		return seamless_internal<glm::dvec4, glm::dvec2, double>(periodicity, value);
 	}
 }
 
