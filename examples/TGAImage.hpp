@@ -1,6 +1,7 @@
 #ifndef COHERENT_EXAMPLES_TGAIMAGE_HPP
 #define COHERENT_EXAMPLES_TGAIMAGE_HPP
 
+#include <iostream>
 #include <vector>
 #include <cassert>
 
